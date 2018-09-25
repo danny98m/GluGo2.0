@@ -1,5 +1,6 @@
-# convertGlucoseToMg_dL.py
-# Converts the glucose values from mmol/L to mg/dL
+# glucoseDataFrame.py
+# sets up glucose info dataframe for analysis
+# TODO add the other columns rn it just does the actual glucose values
 import pandas as pd
 import os
 import sys
@@ -26,6 +27,9 @@ def convertGlucValues():
 
 	# for now im just printing the data i guess
 	print(data)
+	pathBaseName = os.path.basename(pathToCsv)
+	pathBaseName = "OUTPUT_" + pathBaseName
+	data.tocsv(pathBaseName)
 
 def main():
 	convertGlucValues()

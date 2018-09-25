@@ -7,7 +7,7 @@ import sys
 sys.path.append("..")
 from pythonScripts.jsonToCsv import convertToCsv
 
-def convertGlucValues():
+def createDataframe():
 	# get correct path to csv file
 	pathToCsv = convertToCsv()
 
@@ -29,10 +29,10 @@ def convertGlucValues():
 	print(data)
 	pathBaseName = os.path.basename(pathToCsv)
 	pathBaseName = "OUTPUT_" + pathBaseName
-	data.tocsv(pathBaseName)
+	#data.tocsv(pathBaseName)
 
 def main():
-	convertGlucValues()
+	createDataframe()
 
 if __name__ == '__main__':
 	main()

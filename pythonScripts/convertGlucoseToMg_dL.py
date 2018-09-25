@@ -1,9 +1,15 @@
 # convertGlucoseToMg_dL.py
 # Converts the glucose values from mmol/L to mg/dL
 import pandas as pd
+import sys
+sys.path.append("..")
+from pythonScripts.jsonToCsv import convertToCsv
 
 def convertGlucValues():
-	pass
+	colNames = ["value"]
+
+
+
 
 def main():
 	convertGlucValues()

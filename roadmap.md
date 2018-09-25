@@ -1,9 +1,9 @@
 # ROADMAP
 
 ## Near Futre
-- [ ] Convert JSON to CSV
-- [ ] Create pandas data frame of glucose values
-- [ ] Convert glucose values to mg/dL
+- [X] Convert JSON to CSV
+- [X] Create pandas data frame of glucose values
+- [X] Convert glucose values to mg/dL
 - [ ] Add other needed factors to data frame
 - [ ] Export data in some way decided upon later
 

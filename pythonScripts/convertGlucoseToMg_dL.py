@@ -11,7 +11,8 @@ def convertGlucValues():
 	#os.chdir("..")
 	#print(os.getcwd())
 	pathToCsv = convertToCsv()
-	print(pathToCsv)
+	data = pd.read_csv(pathToCsv, names=colNames)
+	#print(pathToCsv)
 
 
 

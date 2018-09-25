@@ -3,7 +3,7 @@ import os
 import os.path
 import sys
 
-def main():
+def convert():
     #------Setup Proper Portable File Path------------
     os.chdir("..")                                              # Go back in directory
     jsonPath = os.path.join("jsonData", "test_kates_data.json") # Set up directory
@@ -15,10 +15,14 @@ def main():
         print(f"Path {absoluteJsonPath} does not exist")
         sys.exit()                                              # Quit program if not found
 
-    df = pd.read_json(absoluteJsonPath)
-    df.to_csv('test_kates_data.csv')
+    csvPath = os.path.join("csvData")                           # Add csv path
+    df = pd.read_json(absoluteJsonPath)                         # Read json file
+    df.to_csv(os.path.join(csvPath, 'test_kates_data.csv'))     # Convert
+
+def main():
+    # should later allow convert to take file argument to make this portable
+    convert()
 
 
 if __name__ == "__main__":
     main()
-

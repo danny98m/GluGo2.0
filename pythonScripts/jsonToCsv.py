@@ -46,9 +46,9 @@ def convertToCsv():
     newFileName += ".csv"
     df = pd.read_json(absoluteJsonPath)                                 # Read json file
     df.to_csv(os.path.join(absoluteCsvPath, newFileName))               # Convert
-    print("\nCSV file created in directory: csvData\n")
     #-----------------------------------------------------------
     destinationPath = os.path.abspath(os.path.join(absoluteCsvPath, newFileName))
+    print(f"\nCSV file created in {destinationPath}\n")
 
     return destinationPath
 

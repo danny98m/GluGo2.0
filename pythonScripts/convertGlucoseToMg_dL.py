@@ -13,6 +13,9 @@ def convertGlucValues():
 	pathToCsv = convertToCsv()
 	data = pd.read_csv(pathToCsv, usecols=colNames)
 	data = data[pd.notnull(data["value"])] # remove values that are NaN
+
+	conversionFactor = 18
+	data = data.mul(conversionFactor)
 	print(data)
 
 

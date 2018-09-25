@@ -25,11 +25,11 @@ def createDataframe():
 	data = data.mul(conversionFactor)
 	#----------------------------------------------------------
 
-	# for now im just printing the data i guess
-	print(data)
+	#print(data)
 	pathBaseName = os.path.basename(pathToCsv)
 	pathBaseName = "OUTPUT_" + pathBaseName
-	#data.tocsv(pathBaseName)
+	pathBaseName = os.path.join(os.path.dirname(pathToCsv), pathBaseName)
+	data.to_csv(pathBaseName)				# return dataframe as a csv
 
 def main():
 	createDataframe()

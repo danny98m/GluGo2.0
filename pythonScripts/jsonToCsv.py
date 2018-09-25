@@ -35,6 +35,9 @@ def convertToCsv():
     df = pd.read_json(absoluteJsonPath)                                 # Read json file
     df.to_csv(os.path.join(absoluteCsvPath, newFileName))               # Convert
     #-----------------------------------------------------------
+    destinationPath = os.path.abspath(os.path.join(absoluteCsvPath, newFileName))
+    return destinationPath
+
 
 def main():
     # should later allow convert to take file argument to make this portable

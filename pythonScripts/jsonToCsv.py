@@ -35,6 +35,5 @@ def main():
     # should later allow convert to take file argument to make this portable
     convert()
 
-
 if __name__ == "__main__":
     main()

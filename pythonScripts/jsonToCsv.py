@@ -9,8 +9,9 @@ import sys
 
 def convertToCsv():
     #------Setup Proper Portable JSON File Path-----------------
+    desiredConvertFile = input("Enter JSON File For Conversion: ")
     os.chdir("..")                                                      # Go back in directory
-    jsonPath = os.path.join("jsonData", "test_kates_data.json")         # Set up directory
+    jsonPath = os.path.join("jsonData", desiredConvertFile)             # Set up directory
     absoluteJsonPath =  os.path.abspath(jsonPath)                       # Create absolute path
     print(f"Changing directory to {absoluteJsonPath}")
     #-----------------------------------------------------------
@@ -27,13 +28,17 @@ def convertToCsv():
     #-----------------------------------------------------------
 
     #-------------Convert JSON to CSV---------------------------
+    newFileName = desiredConvertFile.split(".json")
+    newFileName = newFileName[0]                                        # Eventually make this non mutated
+    newFileName += ".csv"
+    print(newFileName)
     df = pd.read_json(absoluteJsonPath)                                 # Read json file
-    df.to_csv(os.path.join(absoluteCsvPath, 'test_kates_data.csv'))     # Convert
+    df.to_csv(os.path.join(absoluteCsvPath, newFileName))               # Convert
     #-----------------------------------------------------------
 
 def main():
     # should later allow convert to take file argument to make this portable
-    convert()
+    convertToCsv()
 
 if __name__ == "__main__":
     main()

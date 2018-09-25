@@ -11,10 +11,9 @@ def convertGlucValues():
 	#os.chdir("..")
 	#print(os.getcwd())
 	pathToCsv = convertToCsv()
-	data = pd.read_csv(pathToCsv, names=colNames)
-	#print(pathToCsv)
-
-
+	data = pd.read_csv(pathToCsv, usecols=colNames)
+	data = data[pd.notnull(data["value"])] # remove values that are NaN
+	print(data)
 
 
 def main():

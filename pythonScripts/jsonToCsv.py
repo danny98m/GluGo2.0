@@ -7,7 +7,7 @@ import os
 import os.path
 import sys
 
-def convert():
+def convertToCsv():
     #------Setup Proper Portable JSON File Path-----------------
     os.chdir("..")                                                      # Go back in directory
     jsonPath = os.path.join("jsonData", "test_kates_data.json")         # Set up directory

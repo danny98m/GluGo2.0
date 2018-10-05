@@ -1,2 +1,13 @@
 # Files to be ignored
 .DS_Store
+
+# PACKAGES #
+# No unpacked files please
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip

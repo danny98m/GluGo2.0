@@ -110,11 +110,11 @@ def createDataframe():
 
 	#print(data)
 	pathBaseName = os.path.basename(pathToCsv)
-	pathBaseName = "OUTPUT_" + pathBaseName
+	outputFileName = "OUTPUT_" + pathBaseName
 	pathToOutCsv = os.path.join(os.getcwd(), "csvData", "csvOutData")
-	pathBaseName = os.path.join(pathToOutCsv, pathBaseName)
+	outputFilePath = os.path.join(pathToOutCsv, outputFileName)
 	header = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
-	final.to_csv(pathBaseName,header=header)		# return dataframes as a csv
+	final.to_csv(outputFilePath,header=header)		# return dataframes as a csv
 
 def main():
 	createDataframe()

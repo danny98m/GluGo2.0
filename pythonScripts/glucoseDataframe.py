@@ -12,7 +12,7 @@ from dateutil.parser import parse
 
 #-------CONSTANTS-------------
 CONVERSION_FACTOR = 18.01559
-#----------------------------
+#-----------------------------
 
 def createDataframe():
 	# get correct path to csv file
@@ -34,9 +34,8 @@ def createDataframe():
 
 	#--------Do conversion across entire dataset---------------
 	# conversion mmol/L to mg/dL
-	glu = glu.mul(CONVERSION_FACTOR)
 	#----------------------------------------------------------
-
+	glu = glu.mul(CONVERSION_FACTOR)
 	#--------Save month, day, weekday, hour, minutes---------------
 	index = timestamp.index
 

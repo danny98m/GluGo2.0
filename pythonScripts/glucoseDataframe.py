@@ -6,7 +6,6 @@ import os
 import sys
 sys.path.append("..")
 from pythonScripts.jsonToCsv import convertToCsv
-
 from datetime import date
 from dateutil.parser import parse
 

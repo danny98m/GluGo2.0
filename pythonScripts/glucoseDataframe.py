@@ -19,7 +19,6 @@ def createDataframe():
 
 	# this is the column in the csv we want to look at
 	gluValues = ["value"]
-	
 	#----------Create data frame-------------------
 	data = pd.read_csv(pathToCsv) #get all data from csv
 	data = data[pd.notnull(data["value"])] # remove values that are NaN

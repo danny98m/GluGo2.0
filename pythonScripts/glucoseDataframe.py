@@ -1,6 +1,5 @@
 # glucoseDataFrame.py
 # sets up glucose info dataframe for analysis
-# TODO add the other columns rn it just does the actual glucose values
 import pandas as pd
 import numpy as np
 import os

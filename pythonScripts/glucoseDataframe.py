@@ -14,6 +14,8 @@ from dateutil.parser import parse
 def createDataframe():
 	# get correct path to csv file
 	pathToCsv = convertToCsv()
+	currentFile = os.path.basename(pathToCsv)
+	print(f"Currently Reading File: {currentFile}")
 
 	# this is the column in the csv we want to look at
 	gluValues = ["value"]

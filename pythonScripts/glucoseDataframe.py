@@ -1,10 +1,11 @@
 # glucoseDataFrame.py
 # sets up glucose info dataframe for analysis
+import sys
+sys.path.append("..") # proper file path for importing local modules
+
 import pandas as pd
 import numpy as np
 import os
-import sys
-sys.path.append("..")
 from pythonScripts.jsonToCsv import convertToCsv
 from datetime import date
 from dateutil.parser import parse

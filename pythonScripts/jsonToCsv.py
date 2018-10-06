@@ -36,7 +36,7 @@ def convertToCsv():
 
     # If you're here the path exists.. congrats
     #--------------CSV Path Setup-------------------------------
-    csvPath = os.path.join("csvData")                                   # Add csv path
+    csvPath = os.path.join("csvData", "csvInData")                                   # Add csv path
     absoluteCsvPath = os.path.abspath(csvPath)
     #-----------------------------------------------------------
 

@@ -11,7 +11,9 @@ from pythonScripts.jsonToCsv import convertToCsv
 from datetime import date
 from dateutil.parser import parse
 
+#-------CONSTANTS-------------
 CONVERSION_FACTOR = 18.01559
+#----------------------------
 
 def createDataframe():
 	# get correct path to csv file

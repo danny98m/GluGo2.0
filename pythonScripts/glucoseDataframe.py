@@ -70,11 +70,6 @@ def createDataframe():
 	weekdaydf = pd.DataFrame(np.array(weekdayList),index=index)
 	hourdf = pd.DataFrame(np.array(hourList),index=index)
 	minutesdf = pd.DataFrame(np.array(minutesList),index=index)
-
-	#day = timeStr.day
-	#weekday = timeStr.weekday()
-	#hour = timeStr.hour
-	#minutes = timeStr.minutes
 	#--------------------------------------------------------------
 
 	#-------Dicts----------

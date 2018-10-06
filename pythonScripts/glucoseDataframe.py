@@ -11,6 +11,8 @@ from pythonScripts.jsonToCsv import convertToCsv
 from datetime import date
 from dateutil.parser import parse
 
+CONVERSION_FACTOR = 18.01559
+
 def createDataframe():
 	# get correct path to csv file
 	pathToCsv = convertToCsv()
@@ -31,8 +33,7 @@ def createDataframe():
 
 	#--------Do conversion across entire dataset---------------
 	# conversion mmol/L to mg/dL
-	conversionFactor = 18.01559
-	glu = glu.mul(conversionFactor)
+	glu = glu.mul(CONVERSION_FACTOR)
 	#----------------------------------------------------------
 
 	#--------Save month, day, weekday, hour, minutes---------------

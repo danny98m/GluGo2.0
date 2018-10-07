@@ -2,7 +2,7 @@
 .DS_Store
 
 # PACKAGES #
-# No packed files please
+# No compressed files please
 *.7z
 *.dmg
 *.gz

@@ -105,8 +105,22 @@ def createDataframe():
 	}
 	#----------------------
 
+	#=======NASTY CODE FOR CARB AND BOLUS OUTPUT============================
+	pathToCareLink = os.path.join(os.getcwd(), "csvData", "csvInData")
+	bolus_carbCsv = pd.read_csv(os.path.join(pathToCareLink, 'Kate_CareLink_Export_test.csv'))
 
+	bolus = bolus_carbCsv.loc[:,'Bolus Volume Delivered (U)']
+	date = bolus_carbCsv.loc[:, 'Date']
+	time = bolus_carbCsv.loc[:, 'Time']
+	carb = bolus_carbCsv.loc[:, 'BWZ Carb Input (grams)']
+	header = ['Date', 'Time', 'Bolus (U)', 'Carb Input (grams)']
+	bolus_carbData = pd.concat([date,time,bolus,carb],axis=1, ignore_index=True)
+	bolus_carbData = bolus_carbData.dropna(subset=[2, 3], how='all')
 
+	pathToOutCsvBC = os.path.join(os.getcwd(), "csvData", "csvOutData")
+	pathToOutCsvBC = os.path.join(pathToOutCsvBC, "bolus_carb_output.csv")
+	bolus_carbData.to_csv(pathToOutCsvBC, header=header)
+	#=========================================================================
 
 	#--------Concatenate all of the dataframes into one dataframe----------------------------
 	final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together

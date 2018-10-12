@@ -70,6 +70,8 @@ def createDataframe():
 	hourdf = pd.DataFrame(np.array(hourList),index=index)
 	minutesdf = pd.DataFrame(np.array(minutesList),index=index)
 	#--------------------------------------------------------------
+	#pathToBolus = 'csvData/csvInData/Kate_CareLink_Export.csv'
+	#bolusData = pd.read_csv(pathToBolus)
 
 	#-------Dicts----------
 	#basal rates (unit/hour)
@@ -103,10 +105,13 @@ def createDataframe():
 	}
 	#----------------------
 
+
+
+
 	#--------Concatenate all of the dataframes into one dataframe----------------------------
 	final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
 	#----------------------------------------------------------------------------------------
-	print(final)
+	#print(final)
 	
 	pathBaseName = os.path.basename(pathToCsv)
 	outputFileName = "OUTPUT_" + pathBaseName

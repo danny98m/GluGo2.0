@@ -23,13 +23,13 @@ def createDataframe():
 	# this is the column in the csv we want to look at
 	gluValues = ["value"]
 	#----------Create data frame-------------------
-	data = pd.read_csv(pathToCsv) #get all data from csv
-	data = data[pd.notnull(data["value"])] # remove values that are NaN
+	glucLevelData = pd.read_csv(pathToCsv) #get all data from csv
+	glucLevelData = glucLevelData[pd.notnull(glucLevelData["value"])] # remove values that are NaN
 	#----------------------------------------------
 
 	#----------Get data columns--------------------
-	glu = data.loc[:,'value']
-	timestamp = data.loc[:,'time']
+	glu = glucLevelData.loc[:,'value']
+	timestamp = glucLevelData.loc[:,'time']
 	#----------------------------------------------
 
 	#--------Do conversion across entire dataset---------------
@@ -62,7 +62,6 @@ def createDataframe():
 		#for minutes
 		minute = parse(i).minute
 		minutesList.append(minute)
-
 
 	#pd.DataFrame('month',monthList)
 	monthdf = pd.DataFrame(np.array(monthList),index=index)
@@ -107,15 +106,15 @@ def createDataframe():
 	#--------Concatenate all of the dataframes into one dataframe----------------------------
 	final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
 	#----------------------------------------------------------------------------------------
-
-	#print(data)
+	print(final)
+	
 	pathBaseName = os.path.basename(pathToCsv)
 	outputFileName = "OUTPUT_" + pathBaseName
 	pathToOutCsv = os.path.join(os.getcwd(), "csvData", "csvOutData")
 	outputFilePath = os.path.join(pathToOutCsv, outputFileName)
 	header = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
 	final.to_csv(outputFilePath,header=header)		# return dataframes as a csv
-
+	
 def main():
 	createDataframe()
 

@@ -36,8 +36,10 @@ def createDataframe():
 	# conversion mmol/L to mg/dL
 	#----------------------------------------------------------
 	glu = glu.mul(CONVERSION_FACTOR)
+	#----------------------------------------------------------
+
 	#--------Save month, day, weekday, hour, minutes---------------
-	index = timestamp.index
+	indexy = timestamp.index #save the index from this dataframe as variable index
 
 	monthList = []
 	dayList = []
@@ -63,12 +65,15 @@ def createDataframe():
 		minute = parse(i).minute
 		minutesList.append(minute)
 
+	#print(indexy)
+
 	#pd.DataFrame('month',monthList)
-	monthdf = pd.DataFrame(np.array(monthList),index=index)
-	daydf = pd.DataFrame(np.array(dayList),index=index)
-	weekdaydf = pd.DataFrame(np.array(weekdayList),index=index)
-	hourdf = pd.DataFrame(np.array(hourList),index=index)
-	minutesdf = pd.DataFrame(np.array(minutesList),index=index)
+	#convert the lists to dataframes while ensuring the index corresponds to the other dataframes
+	monthdf = pd.DataFrame(np.array(monthList),index=indexy)
+	daydf = pd.DataFrame(np.array(dayList),index=indexy)
+	weekdaydf = pd.DataFrame(np.array(weekdayList),index=indexy)
+	hourdf = pd.DataFrame(np.array(hourList),index=indexy)
+	minutesdf = pd.DataFrame(np.array(minutesList),index=indexy)
 	#--------------------------------------------------------------
 	#pathToBolus = 'csvData/csvInData/Kate_CareLink_Export.csv'
 	#bolusData = pd.read_csv(pathToBolus)
@@ -76,36 +81,36 @@ def createDataframe():
 	#-------Dicts----------
 	#basal rates (unit/hour)
 	basal = {
-		"00:00" : .625,
-		"02:30" : .650,
-		"04:00" : .800,
-		"08:00" : .725,
-		"12:00" : .700,
-		"14:00" : .250,
-		"19:00" : .650
+		"0" : .625,
+		"2" : .650,		#if hour equals 2, then also minute = 30 cause (2:30)
+		"4" : .800,
+		"8" : .725,
+		"12" : .700,
+		"14" : .250,
+		"19" : .650
 	}
 
 	#insulin sensitivity (mg/dL/unit)
 	sensitivity = {
-		"00:00" : 60,
-		"06:00" : 70,
-		"09:00" : 60,
-		"12:00" : 60,
-		"15:00" : 60
+		"0" : 60,
+		"6" : 70,
+		"9" : 60,
+		"12" : 60,
+		"15" : 60
 	}
 
 	#carb ratio (grams/unit)
 	carbRatio = {
-		"00:00" : 10,
-		"06:00" : 5,
-		"11:30" : 5.5,
-		"14:00" : 6,
-		"18:00" : 7,
-		"21:00" : 9
+		"0" : 10,
+		"6" : 5,
+		"11" : 5.5,		#if hour equals 11, then also minute = 30 cause (11:30)
+		"14" : 6,
+		"18" : 7,
+		"21" : 9
 	}
 	#----------------------
 
-	#=======NASTY CODE FOR CARB AND BOLUS OUTPUT============================
+	#---------NASTY CODE FOR CARB AND BOLUS OUTPUT---------------------------
 	pathToCareLink = os.path.join(os.getcwd(), "csvData", "csvInData")
 	bolus_carbCsv = pd.read_csv(os.path.join(pathToCareLink, 'Kate_CareLink_Export_test.csv'))
 
@@ -120,19 +125,101 @@ def createDataframe():
 	pathToOutCsvBC = os.path.join(os.getcwd(), "csvData", "csvOutData")
 	pathToOutCsvBC = os.path.join(pathToOutCsvBC, "bolus_carb_output.csv")
 	bolus_carbData.to_csv(pathToOutCsvBC, header=header)
-	#=========================================================================
+	#-------------------------------------------------------------------------
 
 	#--------Concatenate all of the dataframes into one dataframe----------------------------
 	final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
 	#----------------------------------------------------------------------------------------
 	#print(final)
 	
+	#create initial csv OUTPUT
 	pathBaseName = os.path.basename(pathToCsv)
 	outputFileName = "OUTPUT_" + pathBaseName
 	pathToOutCsv = os.path.join(os.getcwd(), "csvData", "csvOutData")
 	outputFilePath = os.path.join(pathToOutCsv, outputFileName)
 	header = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
 	final.to_csv(outputFilePath,header=header)		# return dataframes as a csv
+
+	basalSensRatioData = pd.read_csv(outputFilePath)
+
+	basalList = []
+	insulinSensList = []
+	carbRatioList = []
+
+	for index, row in basalSensRatioData.iterrows():
+		#for basal list
+		if row['Hour'] >= 0 and row['Hour'] < 2:
+			if row['Hour'] == 2 and row['Minutes'] < 30:
+				basalList.append(basal["0"])
+			elif row['Hour'] == 2 and row['Minutes'] >= 30:
+				basalList.append(basal["2"])
+			else:
+				basalList.append(basal["0"])
+		elif row['Hour'] >= 3 and row['Hour'] < 4:
+			basalList.append(basal["2"])
+		elif row['Hour'] >= 4 and row['Hour'] < 8:
+			basalList.append(basal["4"])
+		elif row['Hour'] >= 8 and row['Hour'] < 12:
+			basalList.append(basal["8"])
+		elif row['Hour'] >= 12 and row['Hour'] < 14:
+			basalList.append(basal["12"])
+		elif row['Hour'] >= 14 and row['Hour'] < 19:
+			basalList.append(basal["14"])
+		elif row['Hour'] >= 19 and row['Hour'] < 24:
+			basalList.append(basal["19"])
+
+		#for insulin sensitivity list
+		if row['Hour'] >= 0 and row['Hour'] < 6:
+			insulinSensList.append(sensitivity["0"])
+		elif row['Hour'] >= 6 and row['Hour'] < 9:
+			insulinSensList.append(sensitivity["6"])
+		elif row['Hour'] >= 9 and row['Hour'] < 12:
+			insulinSensList.append(sensitivity["9"])
+		elif row['Hour'] >= 12 and row['Hour'] < 15:
+			insulinSensList.append(sensitivity["12"])
+		elif row['Hour'] >= 15 and row['Hour'] < 24:
+			insulinSensList.append(sensitivity["15"])
+
+		#for carb ratio list 
+		if row['Hour'] >= 0 and row['Hour'] < 6:
+			carbRatioList.append(carbRatio["0"])
+		elif row['Hour'] >= 6 and row['Hour'] < 11:
+			if row['Hour'] == 11 and row['Minutes'] < 30:
+				carbRatioList.append(carbRatio["6"])
+			elif row['Hour'] == 11 and row['Minutes'] >= 30:
+				carbRatioList.append(carbRatio["11"])
+			else:
+				carbRatioList.append(carbRatio["6"])
+		elif row['Hour'] >= 12 and row['Hour'] < 14:
+			carbRatioList.append(carbRatio["11"])
+		elif row['Hour'] >= 14 and row['Hour'] < 18:
+			carbRatioList.append(carbRatio["14"])
+		elif row['Hour'] >= 18 and row['Hour'] < 21:
+			carbRatioList.append(carbRatio["18"])
+		elif row['Hour'] >= 21 and row['Hour'] < 24:
+			carbRatioList.append(carbRatio["21"])
+
+	#newIndexy = final.index
+	#18509 rows
+
+	print(len(basalList))
+	print(len(insulinSensList))
+	print(len(carbRatioList))
+
+	#create dataframes from lists
+	#basaldf = pd.DataFrame(np.array(basalList),index=indexy) #like above set index to index
+	#print(basaldf) 
+	#17695 rows
+
+	"""
+	#--------Concatenate the new dataframes into final dataframe----------------------------
+	realFinal = pd.concat([timestamp,glu,basaldf,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
+	#----------------------------------------------------------------------------------------
+
+	#create final csv OUTPUT (rewrites the earlier csv file)
+	header = ["TimeStamp", "Glucose (ml/dL)", "Basal Insulin (U/hr)", "Month", "Day","Weekday", "Hour","Minutes"]
+	final.to_csv(outputFilePath,header=header)		# return dataframes as a csv
+	"""
 	
 def main():
 	createDataframe()

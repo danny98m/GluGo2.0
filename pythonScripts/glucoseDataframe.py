@@ -65,8 +65,6 @@ def createDataframe():
 		minute = parse(i).minute
 		minutesList.append(minute)
 
-	#print(indexy)
-
 	#pd.DataFrame('month',monthList)
 	#convert the lists to dataframes while ensuring the index corresponds to the other dataframes
 	monthdf = pd.DataFrame(np.array(monthList),index=indexy)

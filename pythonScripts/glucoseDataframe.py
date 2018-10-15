@@ -148,7 +148,7 @@ def createDataframe():
 
 	for index, row in basalSensRatioData.iterrows():
 		#for basal list
-		if row['Hour'] >= 0 and row['Hour'] < 2:
+		if row['Hour'] >= 0 and row['Hour'] < 3:
 			if row['Hour'] == 2 and row['Minutes'] < 30:
 				basalList.append(basal["0"])
 			elif row['Hour'] == 2 and row['Minutes'] >= 30:
@@ -183,7 +183,7 @@ def createDataframe():
 		#for carb ratio list 
 		if row['Hour'] >= 0 and row['Hour'] < 6:
 			carbRatioList.append(carbRatio["0"])
-		elif row['Hour'] >= 6 and row['Hour'] < 11:
+		elif row['Hour'] >= 6 and row['Hour'] < 12:
 			if row['Hour'] == 11 and row['Minutes'] < 30:
 				carbRatioList.append(carbRatio["6"])
 			elif row['Hour'] == 11 and row['Minutes'] >= 30:
@@ -199,27 +199,21 @@ def createDataframe():
 		elif row['Hour'] >= 21 and row['Hour'] < 24:
 			carbRatioList.append(carbRatio["21"])
 
-	#newIndexy = final.index
-	#18509 rows
-
-	print(len(basalList))
-	print(len(insulinSensList))
-	print(len(carbRatioList))
-
 	#create dataframes from lists
-	#basaldf = pd.DataFrame(np.array(basalList),index=indexy) #like above set index to index
-	#print(basaldf) 
-	#17695 rows
+	basaldf = pd.DataFrame(np.array(basalList),index=indexy) #like above set index to index
+	insulindf = pd.DataFrame(np.array(insulinSensList),index=indexy) #like above set index to index
+	carbdf = pd.DataFrame(np.array(carbRatioList),index=indexy) #like above set index to index
+	
 
-	"""
+	
 	#--------Concatenate the new dataframes into final dataframe----------------------------
-	realFinal = pd.concat([timestamp,glu,basaldf,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
+	realFinal = pd.concat([timestamp,glu,basaldf,insulindf,carbdf,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
 	#----------------------------------------------------------------------------------------
 
 	#create final csv OUTPUT (rewrites the earlier csv file)
-	header = ["TimeStamp", "Glucose (ml/dL)", "Basal Insulin (U/hr)", "Month", "Day","Weekday", "Hour","Minutes"]
-	final.to_csv(outputFilePath,header=header)		# return dataframes as a csv
-	"""
+	header = ["TimeStamp", "Glucose (ml/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes"]
+	realFinal.to_csv(outputFilePath,header=header)		# return dataframes as a csv
+	
 	
 def main():
 	createDataframe()

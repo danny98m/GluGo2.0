@@ -130,7 +130,6 @@ def createDataframe():
 	#--------Concatenate all of the dataframes into one dataframe----------------------------
 	final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
 	#----------------------------------------------------------------------------------------
-	#print(final)
 	
 	#create initial csv OUTPUT
 	pathBaseName = os.path.basename(pathToCsv)

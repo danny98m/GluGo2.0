@@ -1,37 +1,16 @@
-## Welcome to GitHub Pages
+# GluGo2.0
 
-You can use the [editor on GitHub](https://github.com/danny98m/GluGo2.0/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Pursuing an accurate, personalized, and low-maintenance glucose prediction algorithm for Type 1 Diabetetics (T1D) in the spirit of #WeAreNotWaiting
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Introduction
 
-### Markdown
+GluGo2.0 is a startup comprised of students at Wheaton College, in Norton MA. We build on the work of the machine learning team in [GluGo](https://github.com/WheatonCS/GluGo/tree/master/4_Backend_MachineLearning). We're using machine learning to prototype predictive glucose algorithms, the kind that could be implemented in an integrated "closed-loop" system. [OpenAPS](https://openaps.org/), and [Loop](https://loopkit.github.io/loopdocs/) have led the charge for automated T1D management, and news [from Dexcom](https://www.fda.gov/newsevents/newsroom/pressannouncements/ucm602870.htm) and [from Tidepool](https://tidepool.org/tidepool-delivering-loop/) over the past year suggests that widely-accessible, FDA approved closed-loop systems are just on the horizon. Yet there are many barriers that need to be overcome: Neither Loop nor OpenAPS are FDA approved, and neither make hard promises about the safety of their software. Furthermore, the software is often only compatible with outdated insulin pumps, and implementation can be too technically challenging for many people. On the other hand, few health insurance plans currently cover pumps that can be integrated with G5/G6 sensors. Therefore, we seek an algorithm that only utilizes sensor data, without sacraficing the accuracy and personalization of closed-loop algorithms. Such an algorithm could implemented in a sensor-linked alert system. This would sidestep many of the barriers to closed-loop systems by keeping glucose management in the hands of the user, while still providing valuable information about future glucose trends. 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Contents of This Repository
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/danny98m/GluGo2.0/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+* csvData - CSVs involved in the construction of a dataset for algorithm training/testing (one patient)
+* images - Miscellaneous image files
+* jsonData - CGM data (before conversion to CSVs in csvData)
+* pythonScripts - Python scripts involved in construction/modification of datasets
+* referenceDocuments - A concept brief, along with some relevant files from GluGo
+* README.md - This document

@@ -6,8 +6,8 @@ sys.path.append("..") # proper file path for importing local modules
 import pandas as pd
 import numpy as np
 import os
+from datetime import *
 from pythonScripts.jsonToCsv import convertToCsv
-from datetime import date
 from dateutil.parser import parse
 
 #-------CONSTANTS-------------
@@ -116,15 +116,62 @@ def createDataframe():
 	date = bolus_carbCsv.loc[:, 'Date']
 	time = bolus_carbCsv.loc[:, 'Time']
 	carb = bolus_carbCsv.loc[:, 'BWZ Carb Input (grams)']
-	header = ['Date', 'Time', 'Bolus (U)', 'Carb Input (grams)']
+	#header = ['Date', 'Time', 'Bolus (U)', 'Carb Input (grams)']
 	bolus_carbData = pd.concat([date,time,bolus,carb],axis=1, ignore_index=True)
-	bolus_carbData = bolus_carbData.dropna(subset=[2, 3], how='all')
+	bolus_carbData = bolus_carbData.dropna(subset=[2, 3], how='all') #remove column if NaN value in both columns 2&3
+	bolus_carbData = bolus_carbData.drop(bolus_carbData.index[len(bolus_carbData)-1]) #get rid of last header row
+	bolus_carbData.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)"]
+
+	#-------------------------------------------------------------------------
+
+	#--------Save month, day, weekday, hour, minutes---------------
+
+	monthListB = []
+	dayListB = []
+	weekdayListB = []
+	hourListB = []
+	minutesListB = []
+
+	date = bolus_carbData.loc[:, 'Date']
+	time = bolus_carbData.loc[:, 'Time']
+
+	indexBolus = date.index # save the index from this dataframe as variable index
+
+	dayStr = date.astype(str).values.tolist()
+	timeStrB = time.astype(str).values.tolist()
+	for j in timeStrB:
+		timeWhole = datetime.strptime(j, '%H:%M:%S')
+		#for months
+		#month = parse(j).month
+		hourListB.append(timeWhole.hour)
+		#for days
+		#day = parse(j).day
+		minutesListB.append(timeWhole.minute)
+	for k in dayStr:
+		dateWhole = datetime.strptime(k, '%Y/%m/%d')
+		#for hours
+		#hour = parse(k).hour
+		monthListB.append(dateWhole.month)
+		#for minutes
+		#minute = parse(k).minute
+		dayListB.append(dateWhole.day)
+
+	#pd.DataFrame('month',monthList)
+	#convert the lists to dataframes while ensuring the index corresponds to the other dataframes
+	monthdfBolus = pd.DataFrame(np.array(monthListB),index=indexBolus)
+	daydfBolus = pd.DataFrame(np.array(dayListB),index=indexBolus)
+	hourdfBolus = pd.DataFrame(np.array(hourListB),index=indexBolus)
+	minutesdfBolus = pd.DataFrame(np.array(minutesListB),index=indexBolus)
+
+	#concatenate all of these
+	bolus_carbFinal = pd.concat([bolus_carbData,monthdfBolus,daydfBolus,hourdfBolus,minutesdfBolus],axis=1, ignore_index=True)
 
 	#DON'T NEED TO MAKE SEPARATE CSV ANYMORE
-	#pathToOutCsvBC = os.path.join(os.getcwd(), "csvData", "csvOutData")
-	#pathToOutCsvBC = os.path.join(pathToOutCsvBC, "bolus_carb_output.csv")
-	#bolus_carbData.to_csv(pathToOutCsvBC, header=header)
-	#-------------------------------------------------------------------------
+	pathToOutCsvBC = os.path.join(os.getcwd(), "csvData", "csvOutData")
+	pathToOutCsvBC = os.path.join(pathToOutCsvBC, "bolus_carb_output.csv")
+	bolus_carbFinal.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)", "Month", "Day", "Hour","Minutes"]
+	bolus_carbFinal.to_csv(pathToOutCsvBC)
+	#--------------------------------------------------------------
 
 	#--------Concatenate all of the dataframes into one dataframe----------------------------
 	final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
@@ -136,11 +183,29 @@ def createDataframe():
 	#MERGE MEDTRONIC DATA WITH DEXCOM
 	#----------------------------------------------------------------------------------------
 	#match up the bolus insulin & carb intake from one csv
-	for index, row in final.iterrows():
-		minsTide = getattr(row, "Minutes")
-		hrsTide = getattr(row, "Hour")
-		dayTide = getattr(row, "Day")
-		monthTide = getattr(row, "Month")
+	for indexMed, rowMed in bolus_carbData.iterrows(): #go through Medtronic Data
+		minsMed = getattr(rowMed, "Minutes")
+		hrsMed = getattr(rowMed, "Hour")
+		dayMed = getattr(rowMed, "Day")
+		monthMed = getattr(rowMed, "Month")
+		curSmalls = 6
+		gotOne = False
+		for index, row in final.iterrows():		#go through Tidepool Data
+			minsTide = getattr(row, "Minutes")
+			hrsTide = getattr(row, "Hour")
+			dayTide = getattr(row, "Day")
+			monthTide = getattr(row, "Month")
+			#find closest time in Tidepool data to Medtronic data
+			if monthTide == monthMed and dayTide == dayMed and hrsTide == hrsMed:
+				difTime = minsMed - minsTide
+				if (difTime) <= 5:
+					curSmalls = index
+				if gotOne:
+					break
+				gotOne = True
+
+		#set index to bolus & carb info (makes lists)
+	#make dataframes from lists (include nans for indexes unmatched) and concat
 
 	#----------------------------------------------------------------------------------------
 	"""

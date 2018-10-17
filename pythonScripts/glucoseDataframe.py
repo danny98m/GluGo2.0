@@ -39,7 +39,7 @@ def createDataframe():
 	#----------------------------------------------------------
 
 	#--------Save month, day, weekday, hour, minutes---------------
-	indexy = timestamp.index #save the index from this dataframe as variable index
+	indexy = timestamp.index # save the index from this dataframe as variable index
 
 	monthList = []
 	dayList = []

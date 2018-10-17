@@ -120,22 +120,39 @@ def createDataframe():
 	bolus_carbData = pd.concat([date,time,bolus,carb],axis=1, ignore_index=True)
 	bolus_carbData = bolus_carbData.dropna(subset=[2, 3], how='all')
 
-	pathToOutCsvBC = os.path.join(os.getcwd(), "csvData", "csvOutData")
-	pathToOutCsvBC = os.path.join(pathToOutCsvBC, "bolus_carb_output.csv")
-	bolus_carbData.to_csv(pathToOutCsvBC, header=header)
+	#DON'T NEED TO MAKE SEPARATE CSV ANYMORE
+	#pathToOutCsvBC = os.path.join(os.getcwd(), "csvData", "csvOutData")
+	#pathToOutCsvBC = os.path.join(pathToOutCsvBC, "bolus_carb_output.csv")
+	#bolus_carbData.to_csv(pathToOutCsvBC, header=header)
 	#-------------------------------------------------------------------------
 
 	#--------Concatenate all of the dataframes into one dataframe----------------------------
 	final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
+	#give columns names
+	final.columns = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
 	#----------------------------------------------------------------------------------------
 	
+	"""
+	#MERGE MEDTRONIC DATA WITH DEXCOM
+	#----------------------------------------------------------------------------------------
+	#match up the bolus insulin & carb intake from one csv
+	for index, row in final.iterrows():
+		minsTide = getattr(row, "Minutes")
+		hrsTide = getattr(row, "Hour")
+		dayTide = getattr(row, "Day")
+		monthTide = getattr(row, "Month")
+
+	#----------------------------------------------------------------------------------------
+	"""
+
+
 	#create initial csv OUTPUT
 	pathBaseName = os.path.basename(pathToCsv)
 	outputFileName = "OUTPUT_" + pathBaseName
 	pathToOutCsv = os.path.join(os.getcwd(), "csvData", "csvOutData")
 	outputFilePath = os.path.join(pathToOutCsv, outputFileName)
-	header = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
-	final.to_csv(outputFilePath,header=header)		# return dataframes as a csv
+	#header = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
+	final.to_csv(outputFilePath)		# return dataframes as a csv
 
 	basalSensRatioData = pd.read_csv(outputFilePath)
 
@@ -210,6 +227,8 @@ def createDataframe():
 	#create final csv OUTPUT (rewrites the earlier csv file)
 	header = ["TimeStamp", "Glucose (ml/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes"]
 	realFinal.to_csv(outputFilePath,header=header)		# return dataframes as a csv
+
+
 	
 	
 def main():

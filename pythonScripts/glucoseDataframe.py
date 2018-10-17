@@ -110,7 +110,7 @@ def createDataframe():
 
 	#---------NASTY CODE FOR CARB AND BOLUS OUTPUT---------------------------
 	pathToCareLink = os.path.join(os.getcwd(), "csvData", "csvInData")
-	bolus_carbCsv = pd.read_csv(os.path.join(pathToCareLink, 'Kate_CareLink_Export_test.csv'))
+	bolus_carbCsv = pd.read_csv(os.path.join(pathToCareLink, 'Kate_CareLink_Export.csv'),skiprows=6)
 
 	bolus = bolus_carbCsv.loc[:,'Bolus Volume Delivered (U)']
 	date = bolus_carbCsv.loc[:, 'Date']

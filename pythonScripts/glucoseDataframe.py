@@ -65,7 +65,6 @@ def createDataframe():
 		minute = parse(i).minute
 		minutesList.append(minute)
 
-	#pd.DataFrame('month',monthList)
 	#convert the lists to dataframes while ensuring the index corresponds to the other dataframes
 	monthdf = pd.DataFrame(np.array(monthList),index=indexy)
 	daydf = pd.DataFrame(np.array(dayList),index=indexy)
@@ -116,7 +115,6 @@ def createDataframe():
 	date = bolus_carbCsv.loc[:, 'Date']
 	time = bolus_carbCsv.loc[:, 'Time']
 	carb = bolus_carbCsv.loc[:, 'BWZ Carb Input (grams)']
-	#header = ['Date', 'Time', 'Bolus (U)', 'Carb Input (grams)']
 	bolus_carbData = pd.concat([date,time,bolus,carb],axis=1, ignore_index=True)
 	bolus_carbData = bolus_carbData.dropna(subset=[2, 3], how='all') #remove column if NaN value in both columns 2&3
 	bolus_carbData = bolus_carbData.drop(bolus_carbData.index[len(bolus_carbData)-1]) #get rid of last header row
@@ -142,21 +140,16 @@ def createDataframe():
 	for j in timeStrB:
 		timeWhole = datetime.strptime(j, '%H:%M:%S')
 		#for months
-		#month = parse(j).month
 		hourListB.append(timeWhole.hour)
 		#for days
-		#day = parse(j).day
 		minutesListB.append(timeWhole.minute)
 	for k in dayStr:
 		dateWhole = datetime.strptime(k, '%Y/%m/%d')
 		#for hours
-		#hour = parse(k).hour
 		monthListB.append(dateWhole.month)
 		#for minutes
-		#minute = parse(k).minute
 		dayListB.append(dateWhole.day)
 
-	#pd.DataFrame('month',monthList)
 	#convert the lists to dataframes while ensuring the index corresponds to the other dataframes
 	monthdfBolus = pd.DataFrame(np.array(monthListB),index=indexBolus)
 	daydfBolus = pd.DataFrame(np.array(dayListB),index=indexBolus)
@@ -216,7 +209,6 @@ def createDataframe():
 	outputFileName = "OUTPUT_" + pathBaseName
 	pathToOutCsv = os.path.join(os.getcwd(), "csvData", "csvOutData")
 	outputFilePath = os.path.join(pathToOutCsv, outputFileName)
-	#header = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
 	final.to_csv(outputFilePath)		# return dataframes as a csv
 
 	basalSensRatioData = pd.read_csv(outputFilePath)

@@ -6,6 +6,7 @@ sys.path.append("..") # proper file path for importing local modules
 import pandas as pd
 import numpy as np
 import os
+import math
 from datetime import *
 from pythonScripts.jsonToCsv import convertToCsv
 from dateutil.parser import parse
@@ -24,7 +25,7 @@ def createDataframe():
 	gluValues = ["value"]
 	#----------Create data frame-------------------
 	glucLevelData = pd.read_csv(pathToCsv) #get all data from csv
-	glucLevelData = glucLevelData[pd.notnull(glucLevelData["value"])] # remove values that are NaN
+	glucLevelData = glucLevelData[pd.notnull(glucLevelData["value"])] # remove rows that are NaN for value
 	#----------------------------------------------
 
 	#----------Get data columns--------------------
@@ -121,6 +122,24 @@ def createDataframe():
 	bolus_carbData.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)"]
 
 	#-------------------------------------------------------------------------
+	#TRIED TO get rid of any row where either bolus insulin or carb intake is 0
+	#NONE OF THESE SOLUTIONS DID ANYTHING
+
+	#cols = ["Bolus (U)","Carb Input (grams)"]
+	#bolus_carbData[cols] = bolus_carbData[cols].replace({'0':np.nan, 0:np.nan})
+
+	#bolus_carbData.replace({'Bolus (U)': 0, 'Carb Input (grams)': 0}, np.nan,inplace=True)
+
+	#bolus_carbData.replace(0, np.nan) 
+
+	#bolus_carbData = bolus_carbData[pd.notnull(bolus_carbData["Bolus (U)"])] # remove rows that are NaN for bolus
+	#bolus_carbData = bolus_carbData[pd.notnull(bolus_carbData["Carb Input (grams)"])] # remove rows that are NaN for carb
+
+	#bolus_carbData = bolus_carbData[bolus_carbData. != 0]
+	#bolus_carbData = bolus_carbData[bolus_carbData['Carb Input (grams)'] != 0]
+	#-------------------------------------------------------------------------
+
+	#-------------------------------------------------------------------------
 
 	#--------Save month, day, weekday, hour, minutes---------------
 
@@ -172,36 +191,72 @@ def createDataframe():
 	final.columns = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
 	#----------------------------------------------------------------------------------------
 	
-	"""
+	
 	#MERGE MEDTRONIC DATA WITH DEXCOM
 	#----------------------------------------------------------------------------------------
+	#make dataframe of NaN filled bolus and carb columns with indexes matching tidepool
+	bolusCarbdf = pd.DataFrame(np.nan, index=indexy, columns=["Bolus (U)", "Carb Input (grams)"])
+	#bolusdf = pd.DataFrame(np.nan, index=indexy,columns=["Bolus (U)"])
+	#carbdf = pd.DataFrame(np.nan, index=indexy,columns=["Carb Input (grams)"])
+
 	#match up the bolus insulin & carb intake from one csv
-	for indexMed, rowMed in bolus_carbData.iterrows(): #go through Medtronic Data
+	for indexMed, rowMed in bolus_carbFinal.iterrows(): #go through Medtronic Data
 		minsMed = getattr(rowMed, "Minutes")
 		hrsMed = getattr(rowMed, "Hour")
 		dayMed = getattr(rowMed, "Day")
 		monthMed = getattr(rowMed, "Month")
-		curSmalls = 6
+		bolusMed = getattr(rowMed, "Bolus (U)")
+		#print(bolusMed)
+		carbMed = getattr(rowMed, "Carb Input (grams)")
+		curSmalls = -1
 		gotOne = False
-		for index, row in final.iterrows():		#go through Tidepool Data
-			minsTide = getattr(row, "Minutes")
-			hrsTide = getattr(row, "Hour")
-			dayTide = getattr(row, "Day")
-			monthTide = getattr(row, "Month")
+		for indexTide, rowTide in final.iterrows():		#go through Tidepool Data
+			minsTide = getattr(rowTide, "Minutes")
+			hrsTide = getattr(rowTide, "Hour")
+			dayTide = getattr(rowTide, "Day")
+			monthTide = getattr(rowTide, "Month")
 			#find closest time in Tidepool data to Medtronic data
 			if monthTide == monthMed and dayTide == dayMed and hrsTide == hrsMed:
-				difTime = minsMed - minsTide
+				difTime = minsMed - minsTide #time difference of medtronic time minux tidepool time
 				if (difTime) <= 5:
-					curSmalls = index
+					curSmalls = indexTide
 				if gotOne:
-					break
-				gotOne = True
+					break #get out of this inner loop as we found the time we wanted for this data
+				if (difTime) <= 5:
+					gotOne = True
+		#print(curSmalls)
+		#add bolus & carb info to bolusCarbdf
+		#bolus_carbData['Carb Input (grams)']
+		if curSmalls != -1:
+			#print(bolusMed)
+			#print(type(bolusMed))
+			if not math.isnan(float(carbMed)):
+				print(carbMed)
+				bolusCarbdf.loc[curSmalls, 'Carb Input (grams)'] = carbMed
+			if not math.isnan(float(bolusMed)):
+				bolusCarbdf.loc[curSmalls, 'Bolus (U)'] = bolusMed
+			#print(bolusCarbdf.loc[curSmalls, 'Bolus (U)'])
+			
+			#bolusdf.loc[curSmalls, 'Bolus (U)'] = bolusMed
+			#carbdf.loc[curSmalls, 'Carb Ratio'] = carbMed
+		#bolusCarbdf.iloc[curSmalls,['Bolus (U)']] = bolusMed #at index curSmalls in column Bolus put bolusMed value
+		#bolusCarbdf.iloc[curSmalls,['Carb Input (grams)']] = carbMed #at index curSmalls in column Carb put carbMed value
+		#if doesn't work use: df.replace({'A': 0, 'B': 5}, 100) where A is col and 0 is value and 100 is what to replace value with!
+	#print("LOOK HERE")
+	#print(bolusCarbdf.loc[:,'Bolus (U)'])
+	pathToOutCsv = os.path.join(os.getcwd(), "csvData", "csvOutData")
+	bolusCarbdf.to_csv(os.path.join(pathToOutCsv, "anyString.csv"))	
+	#--------Concatenate all of the bolusCarbdf dataframe with final dataframe----------------------------
+	#ERROR ON THIS LINE -> causes '<' in for loop on line 256 to give runtime warning
+	almostFinal = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf,bolusCarbdf],axis=1,ignore_index=True) #concatenate the dataframes together
+	#print(bolusCarbdf)
+	#give columns names
+	almostFinal.columns = ["TimeStamp", "Glucose (ml/dL)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
+	#----------------------------------------------------------------------------------------
 
-		#set index to bolus & carb info (makes lists)
-	#make dataframes from lists (include nans for indexes unmatched) and concat
 
 	#----------------------------------------------------------------------------------------
-	"""
+	
 
 
 	#create initial csv OUTPUT
@@ -209,7 +264,7 @@ def createDataframe():
 	outputFileName = "OUTPUT_" + pathBaseName
 	pathToOutCsv = os.path.join(os.getcwd(), "csvData", "csvOutData")
 	outputFilePath = os.path.join(pathToOutCsv, outputFileName)
-	final.to_csv(outputFilePath)		# return dataframes as a csv
+	almostFinal.to_csv(outputFilePath)		# return dataframes as a csv
 
 	basalSensRatioData = pd.read_csv(outputFilePath)
 
@@ -278,11 +333,11 @@ def createDataframe():
 
 	
 	#--------Concatenate the new dataframes into final dataframe----------------------------
-	realFinal = pd.concat([timestamp,glu,basaldf,insulindf,carbdf,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
+	realFinal = pd.concat([timestamp,glu,basaldf,insulindf,carbdf,monthdf,daydf,weekdaydf,hourdf,minutesdf,bolusCarbdf],axis=1,ignore_index=True) #concatenate the dataframe together
 	#----------------------------------------------------------------------------------------
 
 	#create final csv OUTPUT (rewrites the earlier csv file)
-	header = ["TimeStamp", "Glucose (ml/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes"]
+	header = ["TimeStamp", "Glucose (ml/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
 	realFinal.to_csv(outputFilePath,header=header)		# return dataframes as a csv
 
 

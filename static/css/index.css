@@ -32,3 +32,9 @@
     font-size:2em;
     font-family: "Monoton",sans-serif;
 }
+.profile_pic{
+    width:120px;
+    border-radius:50%;
+    border: 3px solid #c7efdb;
+    margin-bottom: 30px;
+}

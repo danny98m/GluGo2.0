@@ -3,6 +3,7 @@
     border-bottom: 1px solid black;
     border-top: 1px solid black;
     background-color: rgba(201, 76, 76, 0.007);
+    animation: ease-in 2s fadeIn;
 }
 .collapse{
     padding-right: 10px;
@@ -11,6 +12,24 @@
     margin-top:10px;
     line-height:40px;
 }
+.fade-in {
+    opacity:0;  /* make things invisible upon start */
+    -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+    -moz-animation:fadeIn ease-in 1;
+    animation:fadeIn ease-in 1;
+
+    -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+    -moz-animation-fill-mode:forwards;
+    animation-fill-mode:forwards;
+
+    -webkit-animation-duration:1s;
+    -moz-animation-duration:1s;
+    animation-duration:1s;
+}
+@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
 #intro-para{
     /*border-bottom: cadetblue 1px solid;*/
     border-top: cadetblue 1px solid;
@@ -20,6 +39,7 @@
 #logo{
     margin-bottom:-30px;
 }
+
 
 .why-we-do{
     line-height: 40px;
@@ -56,6 +76,6 @@
 }
 #visit{
     color:white;
-    font-size: 20px;
-    padding-top: 25%;
+    font-size: 30px;
+    padding-top: 30%;
 }

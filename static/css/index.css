@@ -41,6 +41,16 @@
 .icon {
     width:30px;
 }
-.contact-icon{
-    margin-bottom: 30px;
+.contact{
+    margin-top: 20px;
+}
+
+.footer > .container > div >  h1{
+    font-family: "Anton", sans-serif;
+    font-size: 150px;
+    margin-top: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color:white;
+
 }

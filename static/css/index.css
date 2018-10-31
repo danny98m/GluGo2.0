@@ -45,7 +45,7 @@
     margin-top: 20px;
 }
 
-.footer > .container > div >  h1{
+.footer > .container > .row > div >  h1{
     font-family: "Anton", sans-serif;
     font-size: 150px;
     margin-top: 20px;
@@ -53,4 +53,9 @@
     padding-bottom: 20px;
     color:white;
 
+}
+#visit{
+    color:white;
+    font-size: 20px;
+    padding-top: 25%;
 }

@@ -37,6 +37,7 @@ def createDataframe():
 	# conversion mmol/L to mg/dL
 	#----------------------------------------------------------
 	glu = glu.mul(CONVERSION_FACTOR)
+	glu = glu.round(2)
 	#----------------------------------------------------------
 
 	#--------Save month, day, weekday, hour, minutes---------------
@@ -108,7 +109,11 @@ def createDataframe():
 
 	#---------NASTY CODE FOR CARB AND BOLUS OUTPUT---------------------------
 	pathToCareLink = os.path.join(os.getcwd(), "csvData", "csvInData")
-	bolus_carbCsv = pd.read_csv(os.path.join(pathToCareLink, 'Kate_CareLink_Export.csv'),skiprows=6)
+
+	#DANNY ADD OUTPUT SO WE CAN SEE WHAT .CSV FILES ARE AVAILABLE FROM MEDTRONIC
+
+	CareLinkFile = input("\nEnter Medtronic File: ")
+	bolus_carbCsv = pd.read_csv(os.path.join(pathToCareLink, CareLinkFile),skiprows=6)
 
 	bolus = bolus_carbCsv.loc[:,'Bolus Volume Delivered (U)']
 	date = bolus_carbCsv.loc[:, 'Date']
@@ -292,9 +297,20 @@ def createDataframe():
 	realFinal = pd.concat([timestamp,glu,basaldf,insulindf,carbdf,monthdf,daydf,weekdaydf,hourdf,minutesdf,bolusCarbdf],axis=1,ignore_index=True) #concatenate the dataframe together
 	#----------------------------------------------------------------------------------------
 
+	#give columns names
+	realFinal.columns = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
+	
+	
+	lastTime = ""
+	for index, row in realFinal.iterrows():
+		if row['TimeStamp']  == lastTime:
+			realFinal = realFinal.drop(index, axis=0)
+		lastTime = row['TimeStamp']
+	'''
 	#create final csv OUTPUT (rewrites the earlier csv file)
 	header = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
-	realFinal.to_csv(outputFilePath,header=header)		# return dataframes as a csv
+	'''
+	realFinal.to_csv(outputFilePath)		# return dataframes as a csv
 	
 	
 def main():

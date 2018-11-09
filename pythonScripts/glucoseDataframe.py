@@ -24,13 +24,15 @@ def create_dataframe():
     print(f"Currently Reading File: {current_file}")
 
     #----------Create data frame-------------------
-    glucLevelData = pd.read_csv(pathToCsv) #get all data from csv
-    glucLevelData = glucLevelData[pd.notnull(glucLevelData["value"])] # remove rows that are NaN for value
+    gluc_level_data = pd.read_csv(path_to_csv) #get all data from csv
+
+    # remove rows that are NaN for value
+    gluc_level_data = gluc_level_data[pd.notnull(gluc_level_data["value"])] 
     #----------------------------------------------
 
     #----------Get data columns--------------------
-    glu = glucLevelData.loc[:,'value']
-    timestamp = glucLevelData.loc[:,'time']
+    glu = gluc_level_data.loc[:, 'value']
+    timestamp = gluc_level_data.loc[:, 'time']
     #----------------------------------------------
 
     #--------Do conversion across entire dataset---------------

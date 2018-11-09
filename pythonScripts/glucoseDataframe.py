@@ -314,7 +314,7 @@ def createDataframe():
 	'''
 
 	realFinal = realFinal.reindex(index=realFinal.index[::-1])
-	realFinal.to_csv("REverseryboy.csv")		# return dataframes as a csv
+	realFinal.to_csv(outputFilePath)		# return dataframes as a csv
 	
 	
 def main():

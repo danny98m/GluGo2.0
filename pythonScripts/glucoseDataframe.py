@@ -17,9 +17,10 @@ CONVERSION_FACTOR = 18.01559
 
 def create_dataframe():
     """really bad function rn"""
-    # get correct path to csv file
-    pathToCsv = convertToCsv()
-    currentFile = os.path.basename(pathToCsv)
+
+    # get correct path to csv input file
+    path_to_csv = convertToCsv()
+    current_file = os.path.basename(pathToCsv)
     print(f"Currently Reading File: {currentFile}")
 
     # this is the column in the csv we want to look at

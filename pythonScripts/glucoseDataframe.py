@@ -20,11 +20,9 @@ def create_dataframe():
 
     # get correct path to csv input file
     path_to_csv = convertToCsv()
-    current_file = os.path.basename(pathToCsv)
-    print(f"Currently Reading File: {currentFile}")
+    current_file = os.path.basename(path_to_csv)
+    print(f"Currently Reading File: {current_file}")
 
-    # this is the column in the csv we want to look at
-    gluValues = ["value"]
     #----------Create data frame-------------------
     glucLevelData = pd.read_csv(pathToCsv) #get all data from csv
     glucLevelData = glucLevelData[pd.notnull(glucLevelData["value"])] # remove rows that are NaN for value

@@ -122,13 +122,13 @@ def create_dataframe():
     #DANNY ADD OUTPUT SO WE CAN SEE WHAT .CSV FILES ARE AVAILABLE FROM MEDTRONIC
 
     care_link_file = input("\nEnter Medtronic File: ")
-    bolus_carb_csv = pd.read_csv(os.path.join(path_to_care_link, care_link_file),skiprows=6)
+    bolus_carb_csv = pd.read_csv(os.path.join(path_to_care_link, care_link_file), skiprows=6)
 
-    bolus = bolus_carb_csv.loc[:,'Bolus Volume Delivered (U)']
+    bolus = bolus_carb_csv.loc[:, 'Bolus Volume Delivered (U)']
     date = bolus_carb_csv.loc[:, 'Date']
     time = bolus_carb_csv.loc[:, 'Time']
     carb = bolus_carb_csv.loc[:, 'BWZ Carb Input (grams)']
-    bolus_carb_data = pd.concat([date,time,bolus,carb],axis=1, ignore_index=True)
+    bolus_carb_data = pd.concat([date, time, bolus, carb], axis=1, ignore_index=True)
     bolus_carb_data = bolus_carb_data.dropna(subset=[2, 3], how='all') #remove column if NaN value in both columns 2&3
     bolus_carb_data = bolus_carb_data.drop(bolus_carb_data.index[len(bolus_carb_data)-1]) #get rid of last header row
     bolus_carb_data.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)"]
@@ -163,24 +163,23 @@ def create_dataframe():
         day_list_b.append(date_whole.day)
 
     #convert the lists to dataframes while ensuring the index corresponds to the other dataframes
-    monthdf_bolus = pd.DataFrame(np.array(month_list_b),index=index_bolus)
-    daydf_bolus = pd.DataFrame(np.array(day_list_b),index=index_bolus)
-    hourdf_bolus = pd.DataFrame(np.array(hour_list_b),index=index_bolus)
-    minutesdf_bolus = pd.DataFrame(np.array(minutes_list_b),index=index_bolus)
+    monthdf_bolus = pd.DataFrame(np.array(month_list_b), index=index_bolus)
+    daydf_bolus = pd.DataFrame(np.array(day_list_b), index=index_bolus)
+    hourdf_bolus = pd.DataFrame(np.array(hour_list_b), index=index_bolus)
+    minutesdf_bolus = pd.DataFrame(np.array(minutes_list_b), index=index_bolus)
 
     #concatenate all of these
-    bolus_carb_final = pd.concat([bolus_carb_data,monthdf_bolus,daydf_bolus,hourdf_bolus,minutesdf_bolus],axis=1, ignore_index=True)
-    bolus_carb_final.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)", "Month", "Day", "Hour","Minutes"]
+    bolus_carb_final = pd.concat([bolus_carb_data, monthdf_bolus, daydf_bolus, hourdf_bolus, minutesdf_bolus], axis=1, ignore_index=True)
+    bolus_carb_final.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)", "Month", "Day", "Hour", "Minutes"]
     
     #--------------------------------------------------------------
 
     #--------Concatenate all of the dataframes into one dataframe----------------------------
     final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
     #give columns names
-    final.columns = ["TimeStamp", "Glucose (mg/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
+    final.columns = ["TimeStamp", "Glucose (mg/dL)", "Month", "Day", "Weekday", "Hour", "Minutes"]
     #----------------------------------------------------------------------------------------
-    
-    
+
     #MERGE MEDTRONIC DATA WITH DEXCOM
     #----------------------------------------------------------------------------------------
     #make dataframe of NaN filled bolus and carb columns with indexes matching tidepool
@@ -193,10 +192,10 @@ def create_dataframe():
         day_med = getattr(row_med, "Day")
         month_med = getattr(row_med, "Month")
         bolus_med = getattr(row_med, "Bolus (U)")
-        
         carb_med = getattr(row_med, "Carb Input (grams)")
         cur_smalls = -1
         got_one = False
+
         for index_tide, row_tide in final.iterrows():     #go through Tidepool Data
             mins_tide = getattr(row_tide, "Minutes")
             hrs_tide = getattr(row_tide, "Hour")
@@ -220,9 +219,9 @@ def create_dataframe():
                 bolus_carbdf.loc[cur_smalls, 'Bolus (U)'] = bolus_med
             
     #--------Concatenate all of the bolusCarbdf dataframe with final dataframe----------------------------
-    almost_final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf,bolus_carbdf],axis=1,ignore_index=True) #concatenate the dataframes together
+    almost_final = pd.concat([timestamp, glu,monthdf, daydf, weekdaydf, hourdf, minutesdf, bolus_carbdf], axis=1, ignore_index=True) #concatenate the dataframes together
     #give columns names
-    almost_final.columns = ["TimeStamp", "Glucose (mg/dL)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
+    almost_final.columns = ["TimeStamp", "Glucose (mg/dL)", "Month", "Day","Weekday", "Hour", "Minutes", "Bolus (U)", "Carb Input (grams)"]
     #----------------------------------------------------------------------------------------
 
 
@@ -296,19 +295,18 @@ def create_dataframe():
             carb_ratio_list.append(carb_ratio["21"])
 
     #create dataframes from lists
-    basaldf = pd.DataFrame(np.array(basal_list),index=indexy) #like above set index to index
-    insulindf = pd.DataFrame(np.array(insulin_sens_list),index=indexy) #like above set index to index
-    carbdf = pd.DataFrame(np.array(carb_ratio_list),index=indexy) #like above set index to index
+    basaldf = pd.DataFrame(np.array(basal_list), index=indexy) #like above set index to index
+    insulindf = pd.DataFrame(np.array(insulin_sens_list), index=indexy) #like above set index to index
+    carbdf = pd.DataFrame(np.array(carb_ratio_list), index=indexy) #like above set index to index
     #----------------------------------------------------------------------------------------
 
     
     #--------Concatenate the new dataframes into final dataframe----------------------------
-    real_final = pd.concat([timestamp,glu,basaldf,insulindf,carbdf,monthdf,daydf,weekdaydf,hourdf,minutesdf,bolus_carbdf],axis=1,ignore_index=True) #concatenate the dataframe together
+    real_final = pd.concat([timestamp, glu, basaldf, insulindf, carbdf, monthdf, daydf, weekdaydf, hourdf, minutesdf, bolus_carbdf], axis=1, ignore_index=True) #concatenate the dataframe together
     #----------------------------------------------------------------------------------------
 
     #give columns names
     real_final.columns = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
-    
     
     last_time = ""
     for index, row in real_final.iterrows():
@@ -320,7 +318,6 @@ def create_dataframe():
     header = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
     '''
     real_final.to_csv(output_file_path)        # return dataframes as a csv
-    
     
 def main():
     create_dataframe()

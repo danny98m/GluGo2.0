@@ -4,14 +4,13 @@ glucoseDataFrame.py
 Creates a dataframe of glucose related statistics
 in diabetics for predictive analysis.
 """
-
-from dateutil.parser import parse
 import sys
-import pandas as pd
-import numpy as np
 import os
 import math
 from datetime import *
+from dateutil.parser import parse
+import pandas as pd
+import numpy as np
 
 sys.path.append("..") # proper file path for importing local modules
 from pythonScripts.jsonToCsv import convertToCsv

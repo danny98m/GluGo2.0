@@ -77,11 +77,11 @@ def create_dataframe():
         minutes_list.append(minute)
 
     #convert the lists to dataframes while ensuring the index corresponds to the other dataframes
-    monthdf = pd.DataFrame(np.array(month_list),index=indexy)
-    daydf = pd.DataFrame(np.array(day_list),index=indexy)
-    weekdaydf = pd.DataFrame(np.array(weekday_list),index=indexy)
-    hourdf = pd.DataFrame(np.array(hour_list),index=indexy)
-    minutesdf = pd.DataFrame(np.array(minutes_list),index=indexy)
+    monthdf = pd.DataFrame(np.array(month_list), index=indexy)
+    daydf = pd.DataFrame(np.array(day_list), index=indexy)
+    weekdaydf = pd.DataFrame(np.array(weekday_list), index=indexy)
+    hourdf = pd.DataFrame(np.array(hour_list), index=indexy)
+    minutesdf = pd.DataFrame(np.array(minutes_list), index=indexy)
     #--------------------------------------------------------------
 
     #-------Dicts----------

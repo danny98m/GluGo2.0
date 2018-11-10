@@ -112,8 +112,8 @@ def createDataframe():
 
 	#DANNY ADD OUTPUT SO WE CAN SEE WHAT .CSV FILES ARE AVAILABLE FROM MEDTRONIC
 
-	CareLinkFile = input("\nEnter Medtronic File: ")
-	bolus_carbCsv = pd.read_csv(os.path.join(pathToCareLink, CareLinkFile),skiprows=6)
+	#CareLinkFile = input("\nEnter Medtronic File: ")
+	bolus_carbCsv = pd.read_csv(os.path.join(pathToCareLink, "Boylan_Medtronic_1.csv"),skiprows=6)
 
 	bolus = bolus_carbCsv.loc[:,'Bolus Volume Delivered (U)']
 	date = bolus_carbCsv.loc[:, 'Date']
@@ -166,6 +166,7 @@ def createDataframe():
 	#--------------------------------------------------------------
 
 	#--------Concatenate all of the dataframes into one dataframe----------------------------
+
 	final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
 	#give columns names
 	final.columns = ["TimeStamp", "Glucose (mg/dL)", "Month", "Day","Weekday", "Hour","Minutes"]
@@ -298,6 +299,7 @@ def createDataframe():
 	#----------------------------------------------------------------------------------------
 
 	#give columns names
+
 	realFinal.columns = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
 	
 	
@@ -310,6 +312,8 @@ def createDataframe():
 	#create final csv OUTPUT (rewrites the earlier csv file)
 	header = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
 	'''
+
+	realFinal = realFinal.reindex(index=realFinal.index[::-1])
 	realFinal.to_csv(outputFilePath)		# return dataframes as a csv
 	
 	

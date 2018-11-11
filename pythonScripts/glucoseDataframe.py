@@ -17,7 +17,39 @@ from pythonScripts.jsonToCsv import convertToCsv
 
 #-------CONSTANTS-------------
 CONVERSION_FACTOR = 18.01559
+#-------Dicts----------
+    #basal rates (unit/hour)
+BASAL = {
+    "0" : .625,
+    "2" : .650,     #if hour equals 2, then also minute = 30 cause (2:30)
+    "4" : .800,
+    "8" : .725,
+    "12" : .700,
+    "14" : .250,
+    "19" : .650
+}
+
+#insulin sensitivity (mg/dL/unit)
+SENSITIVITY = {
+    "0" : 60,
+    "6" : 70,
+    "9" : 60,
+    "12" : 60,
+    "15" : 60
+}
+
+#carb ratio (grams/unit)
+CARB_RATIO = {
+    "0" : 10,
+    "6" : 5,
+    "11" : 5.5,     #if hour equals 11, then also minute = 30 cause (11:30)
+    "14" : 6,
+    "18" : 7,
+    "21" : 9
+}
+#----------------------
 #-----------------------------
+
 
 def create_dataframe():
     """really bad function rn"""
@@ -30,7 +62,7 @@ def create_dataframe():
 
     #----------Create data frame-------------------
     #get all data from csv
-    gluc_level_data = pd.read_csv(path_to_input_csv) 
+    gluc_level_data = pd.read_csv(path_to_input_csv)
     # remove rows that are NaN for value
     gluc_level_data = gluc_level_data[pd.notnull(gluc_level_data["value"])]
     #----------------------------------------------
@@ -48,7 +80,7 @@ def create_dataframe():
     #----------------------------------------------------------
 
     #--------Save month, day, weekday, hour, minutes---------------
-    indexy = timestamp.index # save the index from this dataframe as variable index
+    saved_index = timestamp.index # save the index from this dataframe as variable index
 
     month_list = []
     day_list = []
@@ -75,44 +107,14 @@ def create_dataframe():
         minutes_list.append(minute)
 
     #convert the lists to dataframes while ensuring the index corresponds to the other dataframes
-    monthdf = pd.DataFrame(np.array(month_list), index=indexy)
-    daydf = pd.DataFrame(np.array(day_list), index=indexy)
-    weekdaydf = pd.DataFrame(np.array(weekday_list), index=indexy)
-    hourdf = pd.DataFrame(np.array(hour_list), index=indexy)
-    minutesdf = pd.DataFrame(np.array(minutes_list), index=indexy)
+    monthdf = pd.DataFrame(np.array(month_list), index=saved_index)
+    daydf = pd.DataFrame(np.array(day_list), index=saved_index)
+    weekdaydf = pd.DataFrame(np.array(weekday_list), index=saved_index)
+    hourdf = pd.DataFrame(np.array(hour_list), index=saved_index)
+    minutesdf = pd.DataFrame(np.array(minutes_list), index=saved_index)
     #--------------------------------------------------------------
 
-    #-------Dicts----------
-    #basal rates (unit/hour)
-    basal = {
-        "0" : .625,
-        "2" : .650,     #if hour equals 2, then also minute = 30 cause (2:30)
-        "4" : .800,
-        "8" : .725,
-        "12" : .700,
-        "14" : .250,
-        "19" : .650
-    }
-
-    #insulin sensitivity (mg/dL/unit)
-    sensitivity = {
-        "0" : 60,
-        "6" : 70,
-        "9" : 60,
-        "12" : 60,
-        "15" : 60
-    }
-
-    #carb ratio (grams/unit)
-    carb_ratio = {
-        "0" : 10,
-        "6" : 5,
-        "11" : 5.5,     #if hour equals 11, then also minute = 30 cause (11:30)
-        "14" : 6,
-        "18" : 7,
-        "21" : 9
-    }
-    #----------------------
+    
 
     #---------NASTY CODE FOR CARB AND BOLUS OUTPUT---------------------------
     path_to_care_link = os.path.join(os.getcwd(), "csvData", "csvInData")
@@ -127,8 +129,11 @@ def create_dataframe():
     time = bolus_carb_csv.loc[:, 'Time']
     carb = bolus_carb_csv.loc[:, 'BWZ Carb Input (grams)']
     bolus_carb_data = pd.concat([date, time, bolus, carb], axis=1, ignore_index=True)
-    bolus_carb_data = bolus_carb_data.dropna(subset=[2, 3], how='all') #remove column if NaN value in both columns 2&3
-    bolus_carb_data = bolus_carb_data.drop(bolus_carb_data.index[len(bolus_carb_data)-1]) #get rid of last header row
+
+    #remove column if NaN value in both columns 2&3
+    bolus_carb_data = bolus_carb_data.dropna(subset=[2, 3], how='all') 
+    #get rid of last header row
+    bolus_carb_data = bolus_carb_data.drop(bolus_carb_data.index[len(bolus_carb_data)-1]) 
     bolus_carb_data.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)"]
     #-------------------------------------------------------------------------
 
@@ -181,7 +186,7 @@ def create_dataframe():
     #MERGE MEDTRONIC DATA WITH DEXCOM
     #----------------------------------------------------------------------------------------
     #make dataframe of NaN filled bolus and carb columns with indexes matching tidepool
-    bolus_carbdf = pd.DataFrame(np.nan, index=indexy, columns=["Bolus (U)", "Carb Input (grams)"])
+    bolus_carbdf = pd.DataFrame(np.nan, index=saved_index, columns=["Bolus (U)", "Carb Input (grams)"])
 
     #match up the bolus insulin & carb intake from one csv
     for index_med, row_med in bolus_carb_final.iterrows(): #go through Medtronic Data
@@ -201,7 +206,8 @@ def create_dataframe():
             month_tide = getattr(row_tide, "Month")
             #find closest time in Tidepool data to Medtronic data
             if month_tide == month_med and day_tide == day_med and hrs_tide == hrs_med:
-                dif_time = mins_med - mins_tide #time difference of medtronic time minux tidepool time
+            	#time difference of medtronic time minux tidepool time
+                dif_time = mins_med - mins_tide 
                 if (dif_time) <= 5:
                     cur_smalls = index_tide
                 if got_one:
@@ -243,59 +249,59 @@ def create_dataframe():
         #for basal list
         if row['Hour'] >= 0 and row['Hour'] < 3:
             if row['Hour'] == 2 and row['Minutes'] < 30:
-                basal_list.append(basal["0"])
+                basal_list.append(BASAL["0"])
             elif row['Hour'] == 2 and row['Minutes'] >= 30:
-                basal_list.append(basal["2"])
+                basal_list.append(BASAL["2"])
             else:
-                basal_list.append(basal["0"])
+                basal_list.append(BASAL["0"])
         elif row['Hour'] >= 3 and row['Hour'] < 4:
-            basal_list.append(basal["2"])
+            basal_list.append(BASAL["2"])
         elif row['Hour'] >= 4 and row['Hour'] < 8:
-            basal_list.append(basal["4"])
+            basal_list.append(BASAL["4"])
         elif row['Hour'] >= 8 and row['Hour'] < 12:
-            basal_list.append(basal["8"])
+            basal_list.append(BASAL["8"])
         elif row['Hour'] >= 12 and row['Hour'] < 14:
-            basal_list.append(basal["12"])
+            basal_list.append(BASAL["12"])
         elif row['Hour'] >= 14 and row['Hour'] < 19:
-            basal_list.append(basal["14"])
+            basal_list.append(BASAL["14"])
         elif row['Hour'] >= 19 and row['Hour'] < 24:
-            basal_list.append(basal["19"])
+            basal_list.append(BASAL["19"])
 
         #for insulin sensitivity list
         if row['Hour'] >= 0 and row['Hour'] < 6:
-            insulin_sens_list.append(sensitivity["0"])
+            insulin_sens_list.append(SENSITIVITY["0"])
         elif row['Hour'] >= 6 and row['Hour'] < 9:
-            insulin_sens_list.append(sensitivity["6"])
+            insulin_sens_list.append(SENSITIVITY["6"])
         elif row['Hour'] >= 9 and row['Hour'] < 12:
-            insulin_sens_list.append(sensitivity["9"])
+            insulin_sens_list.append(SENSITIVITY["9"])
         elif row['Hour'] >= 12 and row['Hour'] < 15:
-            insulin_sens_list.append(sensitivity["12"])
+            insulin_sens_list.append(SENSITIVITY["12"])
         elif row['Hour'] >= 15 and row['Hour'] < 24:
-            insulin_sens_list.append(sensitivity["15"])
+            insulin_sens_list.append(SENSITIVITY["15"])
 
         #for carb ratio list 
         if row['Hour'] >= 0 and row['Hour'] < 6:
-            carb_ratio_list.append(carb_ratio["0"])
+            carb_ratio_list.append(CARB_RATIO["0"])
         elif row['Hour'] >= 6 and row['Hour'] < 12:
             if row['Hour'] == 11 and row['Minutes'] < 30:
-                carb_ratio_list.append(carb_ratio["6"])
+                carb_ratio_list.append(CARB_RATIO["6"])
             elif row['Hour'] == 11 and row['Minutes'] >= 30:
-                carb_ratio_list.append(carb_ratio["11"])
+                carb_ratio_list.append(CARB_RATIO["11"])
             else:
-                carb_ratio_list.append(carb_ratio["6"])
+                carb_ratio_list.append(CARB_RATIO["6"])
         elif row['Hour'] >= 12 and row['Hour'] < 14:
-            carb_ratio_list.append(carb_ratio["11"])
+            carb_ratio_list.append(CARB_RATIO["11"])
         elif row['Hour'] >= 14 and row['Hour'] < 18:
-            carb_ratio_list.append(carb_ratio["14"])
+            carb_ratio_list.append(CARB_RATIO["14"])
         elif row['Hour'] >= 18 and row['Hour'] < 21:
-            carb_ratio_list.append(carb_ratio["18"])
+            carb_ratio_list.append(CARB_RATIO["18"])
         elif row['Hour'] >= 21 and row['Hour'] < 24:
-            carb_ratio_list.append(carb_ratio["21"])
+            carb_ratio_list.append(CARB_RATIO["21"])
 
     #create dataframes from lists
-    basaldf = pd.DataFrame(np.array(basal_list), index=indexy) #like above set index to index
-    insulindf = pd.DataFrame(np.array(insulin_sens_list), index=indexy) #like above set index to index
-    carbdf = pd.DataFrame(np.array(carb_ratio_list), index=indexy) #like above set index to index
+    basaldf = pd.DataFrame(np.array(basal_list), index=saved_index) #like above set index to index
+    insulindf = pd.DataFrame(np.array(insulin_sens_list), index=saved_index) #like above set index to index
+    carbdf = pd.DataFrame(np.array(carb_ratio_list), index=saved_index) #like above set index to index
     #----------------------------------------------------------------------------------------
 
     
@@ -315,8 +321,10 @@ def create_dataframe():
     #create final csv OUTPUT (rewrites the earlier csv file)
     header = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
     '''
+    real_final = real_final.reindex(index=real_final.index[::-1])
     real_final.to_csv(output_file_path)        # return dataframes as a csv
     
+
 def main():
     create_dataframe()
 

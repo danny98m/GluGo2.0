@@ -15,9 +15,6 @@ import numpy as np
 sys.path.append("..") # proper file path for importing local modules
 from pythonScripts.jsonToCsv import convertToCsv
 
-
-
-
 #-------CONSTANTS-------------
 CONVERSION_FACTOR = 18.01559
 #-----------------------------
@@ -25,14 +22,15 @@ CONVERSION_FACTOR = 18.01559
 def create_dataframe():
     """really bad function rn"""
 
-    # get correct path to csv input file
-    path_to_csv = convertToCsv()
-    current_file = os.path.basename(path_to_csv)
+    #---get correct path to csv input file-----------
+    path_to_input_csv = convertToCsv()
+    current_file = os.path.basename(path_to_input_csv)
     print(f"Currently Reading File: {current_file}")
+    #------------------------------------------------
 
     #----------Create data frame-------------------
-    gluc_level_data = pd.read_csv(path_to_csv) #get all data from csv
-
+    #get all data from csv
+    gluc_level_data = pd.read_csv(path_to_input_csv) 
     # remove rows that are NaN for value
     gluc_level_data = gluc_level_data[pd.notnull(gluc_level_data["value"])]
     #----------------------------------------------
@@ -175,7 +173,7 @@ def create_dataframe():
     #--------------------------------------------------------------
 
     #--------Concatenate all of the dataframes into one dataframe----------------------------
-    final = pd.concat([timestamp,glu,monthdf,daydf,weekdaydf,hourdf,minutesdf],axis=1,ignore_index=True) #concatenate the dataframe together
+    final = pd.concat([timestamp, glu, monthdf, daydf, weekdaydf, hourdf, minutesdf], axis=1, ignore_index=True) #concatenate the dataframe together
     #give columns names
     final.columns = ["TimeStamp", "Glucose (mg/dL)", "Month", "Day", "Weekday", "Hour", "Minutes"]
     #----------------------------------------------------------------------------------------
@@ -227,7 +225,7 @@ def create_dataframe():
 
     #----------------------------------------------------------------------------------------
     #create initial csv OUTPUT
-    path_base_name = os.path.basename(path_to_csv)
+    path_base_name = os.path.basename(path_to_input_csv)
     output_file_name = "OUTPUT_" + path_base_name
     path_to_out_csv = os.path.join(os.getcwd(), "csvData", "csvOutData")
     output_file_path = os.path.join(path_to_out_csv, output_file_name)

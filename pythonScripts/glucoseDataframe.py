@@ -50,10 +50,19 @@ CARB_RATIO = {
 #----------------------
 #-----------------------------
 
+def convert_glucose(glucose_levels):
+    """Do conversion across entire dataset
+    conversion mmol/L to mg/dL"""
+
+    value_row = glucose_levels.loc[:, 'value']
+
+    convert_row = value_row.mul(CONVERSION_FACTOR)
+    round_conversion = convert_row.round(2)
+
+    return round_conversion
 
 def create_dataframe():
-    """really bad function rn"""
-
+    
     #---get correct path to csv input file-----------
     path_to_input_csv = convertToCsv()
     current_file = os.path.basename(path_to_input_csv)
@@ -68,15 +77,13 @@ def create_dataframe():
     #----------------------------------------------
 
     #----------Get data columns--------------------
-    glu = gluc_level_data.loc[:, 'value']
+    glu = convert_glucose(gluc_level_data)
     timestamp = gluc_level_data.loc[:, 'time']
     #----------------------------------------------
 
     #--------Do conversion across entire dataset---------------
     # conversion mmol/L to mg/dL
     #----------------------------------------------------------
-    glu = glu.mul(CONVERSION_FACTOR)
-    glu = glu.round(2)
     #----------------------------------------------------------
 
     #--------Save month, day, weekday, hour, minutes---------------
@@ -206,7 +213,7 @@ def create_dataframe():
             month_tide = getattr(row_tide, "Month")
             #find closest time in Tidepool data to Medtronic data
             if month_tide == month_med and day_tide == day_med and hrs_tide == hrs_med:
-            	#time difference of medtronic time minux tidepool time
+                #time difference of medtronic time minux tidepool time
                 dif_time = mins_med - mins_tide 
                 if (dif_time) <= 5:
                     cur_smalls = index_tide

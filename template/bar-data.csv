@@ -1,18 +1,18 @@
-date,value
-Monday_high,4.6
-Monday_low,5.05
-Tuesday_high,5.99
-Tuesday_low,4.46
-Wednesday_high,4.05
-Wednesday_low,5
-Thursday_high,12.33
-Thursday_low,3.13
-Friday_high,6.08
-Friday_low,4.06
-Saturday_high,11.82
-Saturday_low,4.28
-Sunday_high,5.45
-Sunday_low,8.54
+date,value,value
+Monday,4.6,3.5
+Monday,5.05,6.5
+Tuesday,5.99
+Tuesday,4.46
+Wednesday,4.05
+Wednesday,5
+Thursday,12.33
+Thursday,3.13
+Friday,6.08
+Friday,4.06
+Saturday,11.82
+Saturday,4.28
+Sunday,5.45
+Sunday,8.54
 
 
 

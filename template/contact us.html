@@ -21,6 +21,12 @@
             display: block;
             margin: auto;
         }
+        rect:nth-of-type(odd) {
+            fill: #466f98;
+        }
+        rect:nth-of-type(even) {
+            fill: #e27349;
+        }
 
     </style>
 </head>
@@ -91,7 +97,7 @@
 
         svg.append('text')
             .attr('x', width-(width+200))
-            .attr('y', -30)
+            .attr('y', -40)
             .attr('text-anchor', 'middle')
             .attr("transform", "rotate(-90)")
             .attr('stroke', 'red')
@@ -117,7 +123,6 @@
         svg.selectAll("bar")
             .data(data)
             .enter().append("rect")
-            .style("fill", "steelblue")
             .attr("x", function (d) {
                 return x(d.date);
             })

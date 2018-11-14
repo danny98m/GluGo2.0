@@ -1,18 +1,11 @@
-date,value,value
-Monday,4.6,3.5
-Monday,5.05,6.5
-Tuesday,5.99
-Tuesday,4.46
-Wednesday,4.05
-Wednesday,5
-Thursday,12.33
-Thursday,3.13
-Friday,6.08
-Friday,4.06
-Saturday,11.82
-Saturday,4.28
-Sunday,5.45
-Sunday,8.54
+Day,High (>230 mg/dL),	Low (<70 mg/dL),
+Mon	,4.6	,5.05
+Tue	,5.99	,4.46
+Wed	,4.05	,5
+Thu	,12.33	,3.13
+Fri	,6.08	,4.06
+Sat	,11.82,	4.28
+Sun	,5.45	,8.54
 
 
 

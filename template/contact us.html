@@ -3,93 +3,133 @@
 <meta charset="utf-8">
 
 <head>
-	<style>
+    <style>
 
-	.axis {
-	  font: 10px sans-serif;
-	}
+        .axis {
+            font: 10px sans-serif;
+        }
 
-	.axis path,
-	.axis line {
-	  fill: none;
-	  stroke: #000;
-	  shape-rendering: crispEdges;
-	}
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        svg{
+            border: solid green 1px;
+            padding: 10px;
+            display: block;
+            margin: auto;
+        }
 
-	</style>
+    </style>
 </head>
 
 <body>
-	
-<script src="http://d3js.org/d3.v3.min.js"></script>
 
+<script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-let margin = {top: 20, right: 20, bottom: 70, left: 40},
-    width = 600 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+    let margin = {top: 60, right: 10, bottom: 140, left: 60},
+        width = 900 - margin.left - margin.right,
+        height = 600 - margin.top - margin.bottom;
 
-// Parse the date / time
+    // Parse the date / time
 
-let x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
-let y = d3.scale.linear().range([height, 0]);
+    let x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+    let y = d3.scale.linear().range([height, 0]);
 
-let xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .ticks(5);
+    let xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .ticks(20);
 
-let yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(10);
+    let yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(30);
 
-let svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", 
-          "translate(" + margin.left + "," + margin.top + ")");
+    let svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("bar-data.csv", function(error, data) {
+    d3.csv("bar-data.csv", function (error, data) {
 
-    data.forEach(function(d) {
-        d.value = +d.value;
+        data.forEach(function (d) {
+            d.value = +d.value;
+        });
+
+        x.domain(data.map(function (d) {
+            return d.date;
+        }));
+        y.domain([0, d3.max(data, function (d) {
+            return d.value;
+        })]);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-90)");
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+
+
+        svg.append('text')
+            .attr('x', width-(width+200))
+            .attr('y', -30)
+            .attr('text-anchor', 'middle')
+            .attr("transform", "rotate(-90)")
+            .attr('stroke', 'red')
+            .attr('fill', 'red')
+            .text('Frequency');
+
+        svg.append('text')
+            .attr('x', width/2)
+            .attr('y', height - (height + 40))
+            .attr('text-anchor', 'middle')
+            .attr('stroke', 'red')
+            .attr('fill', 'red')
+            .text('% of High/Low Glucose level found in each day');
+
+        svg.append('text')
+            .attr('x', width/2)
+            .attr('y', height+100)
+            .attr('text-anchor', 'middle')
+            .attr('stroke', 'red')
+            .attr('fill', 'red')
+            .text('Days of the Week');
+
+        svg.selectAll("bar")
+            .data(data)
+            .enter().append("rect")
+            .style("fill", "steelblue")
+            .attr("x", function (d) {
+                return x(d.date);
+            })
+            .attr("width", x.rangeBand())
+            .attr("y", function (d) {
+                return y(d.value);
+            })
+            .attr("height", function (d) {
+                return height - y(d.value);
+            });
+
     });
-	
-  x.domain(data.map(function(d) { return d.date; }));
-  y.domain([0, d3.max(data, function(d) { return d.value; })]);
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-    .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-.8em")
-      .attr("dy", "-.55em")
-      .attr("transform", "rotate(-90)" );
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Value ($)");
-
-  svg.selectAll("bar")
-      .data(data)
-    .enter().append("rect")
-      .style("fill", "steelblue")
-      .attr("x", function(d) { return x(d.date); })
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.value); })
-      .attr("height", function(d) { return height - y(d.value); });
-
-});
 
 </script>
 

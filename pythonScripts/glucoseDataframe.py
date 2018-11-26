@@ -61,41 +61,16 @@ def convert_glucose(glucose_levels):
 
     return round_conversion
 
-def create_dataframe():
-    
-    #---get correct path to csv input file-----------
-    path_to_input_csv = convertToCsv()
-    current_file = os.path.basename(path_to_input_csv)
-    print(f"Currently Reading File: {current_file}")
-    #------------------------------------------------
-
-    #----------Create data frame-------------------
-    #get all data from csv
-    gluc_level_data = pd.read_csv(path_to_input_csv)
-    # remove rows that are NaN for value
-    gluc_level_data = gluc_level_data[pd.notnull(gluc_level_data["value"])]
-    #----------------------------------------------
-
-    #----------Get data columns--------------------
-    glu = convert_glucose(gluc_level_data)
-    timestamp = gluc_level_data.loc[:, 'time']
-    #----------------------------------------------
-
-    #--------Do conversion across entire dataset---------------
-    # conversion mmol/L to mg/dL
-    #----------------------------------------------------------
-    #----------------------------------------------------------
-
-    #--------Save month, day, weekday, hour, minutes---------------
-    saved_index = timestamp.index # save the index from this dataframe as variable index
-
+def divide_timestamp(time_row):
+    """Seperates timestamp into individual
+    months, days, weekdays, hours, and minutes"""
     month_list = []
     day_list = []
     weekday_list = []
     hour_list = []
     minutes_list = []
 
-    time_str = timestamp.astype(str).values.tolist()
+    time_str = time_row.astype(str).values.tolist()
     for i in time_str:
         #for months
         month = parse(i).month
@@ -113,6 +88,35 @@ def create_dataframe():
         minute = parse(i).minute
         minutes_list.append(minute)
 
+    return month_list, day_list, weekday_list, hour_list, minutes_list
+
+def create_dataframe():
+    """Creates dataframe for glucose analysis"""
+
+    #---get correct path to csv input file-----------
+    path_to_input_csv = convertToCsv()
+    current_file = os.path.basename(path_to_input_csv)
+    print(f"Currently Reading File: {current_file}")
+    care_link_file = input("\nEnter Medtronic File: ")
+    #------------------------------------------------
+
+    #----------Create data frame-------------------
+    #get all data from csv
+    gluc_level_data = pd.read_csv(path_to_input_csv)
+    # remove rows that are NaN for value
+    gluc_level_data = gluc_level_data[pd.notnull(gluc_level_data["value"])]
+    #----------------------------------------------
+
+    #---------------conversion mmol/L to mg/dL-----------------
+    glu = convert_glucose(gluc_level_data)
+    #----------------------------------------------------------
+
+    #--------Save month, day, weekday, hour, minutes---------------
+    timestamp = gluc_level_data.loc[:, 'time']
+    saved_index = timestamp.index # save the index from this dataframe as variable index
+
+    month_list, day_list, weekday_list, hour_list, minutes_list = divide_timestamp(timestamp)
+
     #convert the lists to dataframes while ensuring the index corresponds to the other dataframes
     monthdf = pd.DataFrame(np.array(month_list), index=saved_index)
     daydf = pd.DataFrame(np.array(day_list), index=saved_index)
@@ -121,14 +125,8 @@ def create_dataframe():
     minutesdf = pd.DataFrame(np.array(minutes_list), index=saved_index)
     #--------------------------------------------------------------
 
-    
-
-    #---------NASTY CODE FOR CARB AND BOLUS OUTPUT---------------------------
+    #---------BOLUS OUTPUT---------------------------
     path_to_care_link = os.path.join(os.getcwd(), "csvData", "csvInData")
-
-    #DANNY ADD OUTPUT SO WE CAN SEE WHAT .CSV FILES ARE AVAILABLE FROM MEDTRONIC
-
-    care_link_file = input("\nEnter Medtronic File: ")
     bolus_carb_csv = pd.read_csv(os.path.join(path_to_care_link, care_link_file), skiprows=6)
 
     bolus = bolus_carb_csv.loc[:, 'Bolus Volume Delivered (U)']
@@ -138,9 +136,9 @@ def create_dataframe():
     bolus_carb_data = pd.concat([date, time, bolus, carb], axis=1, ignore_index=True)
 
     #remove column if NaN value in both columns 2&3
-    bolus_carb_data = bolus_carb_data.dropna(subset=[2, 3], how='all') 
+    bolus_carb_data = bolus_carb_data.dropna(subset=[2, 3], how='all')
     #get rid of last header row
-    bolus_carb_data = bolus_carb_data.drop(bolus_carb_data.index[len(bolus_carb_data)-1]) 
+    bolus_carb_data = bolus_carb_data.drop(bolus_carb_data.index[len(bolus_carb_data)-1])
     bolus_carb_data.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)"]
     #-------------------------------------------------------------------------
 
@@ -148,7 +146,6 @@ def create_dataframe():
 
     month_list_b = []
     day_list_b = []
-    #weekday_list_b = []
     hour_list_b = []
     minutes_list_b = []
 
@@ -181,7 +178,7 @@ def create_dataframe():
     #concatenate all of these
     bolus_carb_final = pd.concat([bolus_carb_data, monthdf_bolus, daydf_bolus, hourdf_bolus, minutesdf_bolus], axis=1, ignore_index=True)
     bolus_carb_final.columns = ["Date", "Time", "Bolus (U)", "Carb Input (grams)", "Month", "Day", "Hour", "Minutes"]
-    
+
     #--------------------------------------------------------------
 
     #--------Concatenate all of the dataframes into one dataframe----------------------------
@@ -214,25 +211,30 @@ def create_dataframe():
             #find closest time in Tidepool data to Medtronic data
             if month_tide == month_med and day_tide == day_med and hrs_tide == hrs_med:
                 #time difference of medtronic time minux tidepool time
-                dif_time = mins_med - mins_tide 
+                dif_time = mins_med - mins_tide
                 if (dif_time) <= 5:
                     cur_smalls = index_tide
                 if got_one:
                     break #get out of this inner loop as we found the time we wanted for this data
                 if (dif_time) <= 5:
                     got_one = True
-        
+
         #add bolus & carb info to bolusCarbdf
         if cur_smalls != -1:
             if not math.isnan(float(carb_med)):
                 bolus_carbdf.loc[cur_smalls, 'Carb Input (grams)'] = carb_med
             if not math.isnan(float(bolus_med)):
                 bolus_carbdf.loc[cur_smalls, 'Bolus (U)'] = bolus_med
-            
-    #--------Concatenate all of the bolusCarbdf dataframe with final dataframe----------------------------
-    almost_final = pd.concat([timestamp, glu,monthdf, daydf, weekdaydf, hourdf, minutesdf, bolus_carbdf], axis=1, ignore_index=True) #concatenate the dataframes together
+  
+    #--------Concatenate all of the bolusCarbdf dataframe with final dataframe---------------
+    #concatenate the dataframes together
+    almost_final = pd.concat([timestamp, glu, monthdf, daydf, weekdaydf, hourdf,
+                              minutesdf, bolus_carbdf], axis=1, ignore_index=True)
+
     #give columns names
-    almost_final.columns = ["TimeStamp", "Glucose (mg/dL)", "Month", "Day","Weekday", "Hour", "Minutes", "Bolus (U)", "Carb Input (grams)"]
+    almost_final.columns = ["TimeStamp", "Glucose (mg/dL)", "Month",
+                            "Day", "Weekday", "Hour", "Minutes", "Bolus (U)", 
+                            "Carb Input (grams)"]
     #----------------------------------------------------------------------------------------
 
 
@@ -286,7 +288,7 @@ def create_dataframe():
         elif row['Hour'] >= 15 and row['Hour'] < 24:
             insulin_sens_list.append(SENSITIVITY["15"])
 
-        #for carb ratio list 
+        #for carb ratio list
         if row['Hour'] >= 0 and row['Hour'] < 6:
             carb_ratio_list.append(CARB_RATIO["0"])
         elif row['Hour'] >= 6 and row['Hour'] < 12:
@@ -317,11 +319,13 @@ def create_dataframe():
     #----------------------------------------------------------------------------------------
 
     #give columns names
-    real_final.columns = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)","Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day","Weekday", "Hour","Minutes","Bolus (U)", "Carb Input (grams)"]
-    
+    real_final.columns = ["TimeStamp", "Glucose (mg/dL)", "Basal Insulin (U/hr)", 
+    "Insulin Sensitivity (mg/dL/U)","Carb Ratio (g/U)", "Month", "Day", 
+    "Weekday", "Hour", "Minutes", "Bolus (U)", "Carb Input (grams)"]
+
     last_time = ""
     for index, row in real_final.iterrows():
-        if row['TimeStamp']  == last_time:
+        if row['TimeStamp'] == last_time:
             real_final = real_final.drop(index, axis=0)
         last_time = row['TimeStamp']
     '''
@@ -330,9 +334,11 @@ def create_dataframe():
     '''
     real_final = real_final.reindex(index=real_final.index[::-1])
     real_final.to_csv(output_file_path)        # return dataframes as a csv
-    
+
 
 def main():
+    """main"""
+
     create_dataframe()
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 dataframe = pandas.read_csv("C:\\Users\\Ethan\\Desktop\\Startup_2018\\Experiment_#3_POWELL\\glucose_dataset_-_lags,_hour_of_day.csv")
 dataset = dataframe.values
 # split into input (X) and output (Y) variables
+# new predictor would just expand the columns 
 X = dataset[:,2:16]
 Y = dataset[:,1]
 

@@ -8,6 +8,7 @@ GluGo2.0 is a startup comprised of students at Wheaton College, in Norton MA. We
 
 ## Contents of This Repository
 
+* LICENSE - contains licensing information for the software
 * csvData - CSVs involved in the construction of a dataset for algorithm training/testing (one patient)
 * images - Miscellaneous image files
 * jsonData - CGM data (before conversion to CSVs in csvData)

@@ -1,0 +1,81 @@
+.navigation-bar{
+    margin-top:10px;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    background-color: rgba(201, 76, 76, 0.007);
+    animation: ease-in 2s fadeIn;
+}
+.collapse{
+    padding-right: 10px;
+}
+#introduction{
+    margin-top:10px;
+    line-height:40px;
+}
+.fade-in {
+    opacity:0;  /* make things invisible upon start */
+    -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+    -moz-animation:fadeIn ease-in 1;
+    animation:fadeIn ease-in 1;
+
+    -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+    -moz-animation-fill-mode:forwards;
+    animation-fill-mode:forwards;
+
+    -webkit-animation-duration:1s;
+    -moz-animation-duration:1s;
+    animation-duration:1s;
+}
+@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+#intro-para{
+    /*border-bottom: cadetblue 1px solid;*/
+    border-top: cadetblue 1px solid;
+    padding-bottom: 35px;
+    padding-top:25px;
+}
+#logo{
+    margin-bottom:-30px;
+}
+
+
+.why-we-do{
+    line-height: 40px;
+    padding:10px;
+    /*border-bottom: 1px solid black;*/
+    margin-bottom: 15px;
+}
+
+.how{
+    font-size:2em;
+    font-family: "Monoton",sans-serif;
+}
+.profile_pic{
+    width:120px;
+    border-radius:50%;
+    border: 3px solid #c7efdb;
+    margin-bottom: 30px;
+}
+.icon {
+    width:30px;
+}
+.contact{
+    margin-top: 20px;
+}
+
+.footer > .container > .row > div >  h1{
+    font-family: "Anton", sans-serif;
+    font-size: 150px;
+    margin-top: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color:white;
+
+}
+#visit{
+    color:white;
+    font-size: 30px;
+    padding-top: 30%;
+}

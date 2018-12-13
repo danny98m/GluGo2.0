@@ -1,0 +1,61 @@
+---
+title: "Arima"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(tseries)
+library(forecast)
+
+
+#read file
+setwd("csvData/csvOutData")
+getwd()
+output <- read.csv("OUTPUT_Boylan_Tidepool_1.csv")
+glucose <- output[,3]
+```
+```{r}
+#check stationary
+adf.test(glucose, alternative = "stationary")
+```
+```{r}
+#non-seasonal
+#fit autoarima
+auto_arima <- auto.arima(glucose)
+auto_arima
+#predict <- forecast(auto_arima, h = 1000)
+#plot(predict)
+```
+
+```{r}
+fit <- Arima(glucose, order=c(5,0,4))
+checkresiduals(fit)
+```
+```{r}
+#since there is a spike at lag 4 try seasonal = (0,1,1)
+prediction_list <- c()
+for (i in 0:20){
+  interval <- 2*i
+  fit3 <- Arima(glucose[1:(length(glucose)-200+interval)], order=c(10,1,4), seasonal=c(0,1,1))
+  #checkresiduals(fit3)
+  predict <- forecast(fit3, h=2)
+  prediction_list <- c(prediction_list, predict$mean[1:2])
+}
+
+plot(seq(1,210, by = 5),prediction_list, pch = 17, xlab="Time(minute)", ylab = "Glucose value(mg/dL)", main = "Actual vs predicted glucose value (15 mins further) using Arima", col = "red", cex = 1, xlim = range(1:200))
+lines(seq(1,210, by = 5),prediction_list, lwd = 2, col = "red")
+points(seq(0,210, by = 5), glucose[(length(glucose)-200):(length(glucose)-158)], pch = 20, col = "black", cex = 1)
+lines(seq(0,210, by = 5), glucose[(length(glucose)-200):(length(glucose)-158)], lwd = 2, col = "black")
+legend("bottomright", legend = c("Actual", "Predicted"), col = c("black", "red"), pch = c(20, 17))
+
+```
+
+```{r}
+#residual
+diff <- prediction_list - glucose[(length(glucose)-200):(length(glucose)-168)]
+plot(diff, ylim = c(-10, 10), xlab = "Time", ylab = "residual", main = "residual plot of predicted glucose value", pch = 20)
+abline(0,0)
+
+```
+
